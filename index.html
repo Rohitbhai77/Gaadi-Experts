@@ -790,6 +790,90 @@
       }
     });
 
+    // Image Zoom and Pan State & Functions
+    let imageZooms = {}; // index -> { scale, translateX, translateY }
+
+    function getZoomState(idx) {
+      if (!imageZooms[idx]) {
+        imageZooms[idx] = { scale: 1, translateX: 0, translateY: 0 };
+      }
+      return imageZooms[idx];
+    }
+
+    window.zoomImage = function(idx, delta) {
+      const state = getZoomState(idx);
+      state.scale = Math.min(Math.max(1, state.scale + delta), 5);
+      if (state.scale === 1) {
+        state.translateX = 0;
+        state.translateY = 0;
+      }
+      applyImageTransform(idx);
+    };
+
+    window.resetImageZoom = function(idx) {
+      const state = getZoomState(idx);
+      state.scale = 1;
+      state.translateX = 0;
+      state.translateY = 0;
+      applyImageTransform(idx);
+    };
+
+    window.handleImageWheel = function(e, idx) {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const state = getZoomState(idx);
+        const delta = e.deltaY < 0 ? 0.25 : -0.25;
+        const newScale = Math.min(Math.max(1, state.scale + delta), 5);
+        
+        state.scale = newScale;
+        if (state.scale === 1) {
+          state.translateX = 0;
+          state.translateY = 0;
+        }
+        applyImageTransform(idx);
+      }
+    };
+
+    function applyImageTransform(idx) {
+      const img = document.getElementById(`previewImg_${idx}`);
+      const badge = document.getElementById(`zoomLevel_${idx}`);
+      const state = getZoomState(idx);
+      if (img) {
+        img.style.transform = `scale(${state.scale}) translate(${state.translateX}px, ${state.translateY}px)`;
+      }
+      if (badge) {
+        badge.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+    }
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let activeDragIdx = null;
+
+    window.handleImageMouseDown = function(e, idx) {
+      const state = getZoomState(idx);
+      if (state.scale > 1) {
+        isDragging = true;
+        activeDragIdx = idx;
+        startX = e.clientX - state.translateX;
+        startY = e.clientY - state.translateY;
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging || activeDragIdx === null) return;
+      const state = getZoomState(activeDragIdx);
+      state.translateX = e.clientX - startX;
+      state.translateY = e.clientY - startY;
+      applyImageTransform(activeDragIdx);
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      activeDragIdx = null;
+    });
+
     // Generate Button Click: Validate and Open Preview Modal
     generatePdfBtn.addEventListener('click', () => {
       const claimNumber = document.getElementById('claimNumber').value.trim();
@@ -851,14 +935,24 @@
 
       // Populate Preview Modal Right Side (Scrollable Photos)
       previewPhotoCount.textContent = uploadedImages.length;
+      imageZooms = {};
       previewPhotosScrollContainer.innerHTML = uploadedImages.map((img, idx) => `
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 shadow-md">
-          <div class="flex items-center justify-between mb-2 px-1">
+          <div class="flex items-center justify-between mb-2 px-1 flex-wrap gap-2">
             <span class="text-xs sm:text-sm font-bold text-slate-800">Photo #${idx + 1}</span>
-            <span class="text-xs text-slate-500 truncate max-w-[200px]">${img.name}</span>
+            <div class="flex items-center gap-1.5">
+              <span id="zoomLevel_${idx}" class="text-[11px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">100%</span>
+              <button type="button" onclick="zoomImage(${idx}, 0.25)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold" title="Zoom In">+</button>
+              <button type="button" onclick="zoomImage(${idx}, -0.25)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold" title="Zoom Out">-</button>
+              <button type="button" onclick="resetImageZoom(${idx})" class="px-1.5 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] font-bold" title="Reset Zoom">Reset</button>
+              <span class="text-xs text-slate-500 truncate max-w-[120px] ml-1">${img.name}</span>
+            </div>
           </div>
-          <div class="rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center min-h-[350px] sm:min-h-[500px]">
-            <img src="${img.dataUrl}" alt="Photo ${idx + 1}" class="w-full h-full object-contain max-h-[70vh]">
+          <div id="imgContainer_${idx}" class="relative rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center min-h-[350px] sm:min-h-[500px] cursor-grab active:cursor-grabbing select-none" onwheel="handleImageWheel(event, ${idx})" onmousedown="handleImageMouseDown(event, ${idx})" ondblclick="resetImageZoom(${idx})">
+            <img id="previewImg_${idx}" src="${img.dataUrl}" alt="Photo ${idx + 1}" class="transition-transform duration-75 object-contain max-h-[70vh] pointer-events-none" style="transform: scale(1) translate(0px, 0px);">
+            <div class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded pointer-events-none opacity-80">
+              💡 Ctrl + Scroll to Zoom | Drag to Pan | Double Click to Reset
+            </div>
           </div>
         </div>
       `).join('');
