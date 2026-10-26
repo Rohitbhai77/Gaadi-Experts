@@ -571,6 +571,34 @@
 
     // State to hold all uploaded image objects { id, file, dataUrl, name }
     let uploadedImages = [];
+    let draggedIndex = null;
+
+    window.handleDragStart = function(e, index) {
+      draggedIndex = index;
+      e.dataTransfer.effectAllowed = 'move';
+    };
+
+    window.handleDragOver = function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    };
+
+    window.handleDrop = function(e, index) {
+      e.preventDefault();
+      if (draggedIndex === null || draggedIndex === index) return;
+      const item = uploadedImages.splice(draggedIndex, 1)[0];
+      uploadedImages.splice(index, 0, item);
+      draggedIndex = null;
+      renderThumbnails();
+    };
+
+    window.moveImage = function(index, delta) {
+      const newIndex = index + delta;
+      if (newIndex < 0 || newIndex >= uploadedImages.length) return;
+      const item = uploadedImages.splice(index, 1)[0];
+      uploadedImages.splice(newIndex, 0, item);
+      renderThumbnails();
+    };
 
     // DOM Elements
     const dropZone = document.getElementById('dropZone');
@@ -655,15 +683,31 @@
 
       uploadedImages.forEach((img, index) => {
         const item = document.createElement('div');
-        item.className = 'relative group bg-slate-50 border border-slate-200 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center shadow-sm';
+        item.className = 'relative group bg-slate-50 border border-slate-200 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center shadow-sm cursor-move';
+        item.setAttribute('draggable', 'true');
+        item.setAttribute('ondragstart', `handleDragStart(event, ${index})`);
+        item.setAttribute('ondragover', `handleDragOver(event)`);
+        item.setAttribute('ondrop', `handleDrop(event, ${index})`);
+
         item.innerHTML = `
-          <img src="${img.dataUrl}" alt="Photo ${index + 1}" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button type="button" onclick="removeImage('${img.id}')" title="Delete" class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-700 shadow">
-              <i class="ph ph-trash font-bold"></i>
-            </button>
+          <img src="${img.dataUrl}" alt="Photo ${index + 1}" class="w-full h-full object-cover pointer-events-none">
+          <div class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-between p-2">
+            <div class="flex items-center justify-between w-full">
+              <span class="bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold">#${index + 1}</span>
+              <button type="button" onclick="removeImage('${img.id}')" title="Delete" class="w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-700 shadow">
+                <i class="ph ph-trash font-bold text-xs"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="moveImage(${index}, -1)" ${index === 0 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Left / Forward" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
+                <i class="ph ph-arrow-left"></i>
+              </button>
+              <button type="button" onclick="moveImage(${index}, 1)" ${index === uploadedImages.length - 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Right / Backward" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
+                <i class="ph ph-arrow-right"></i>
+              </button>
+            </div>
           </div>
-          <span class="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+          <span class="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono group-hover:opacity-0 transition-opacity">
             #${index + 1}
           </span>
         `;
