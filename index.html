@@ -59,34 +59,19 @@
       --theme-bg: rgba(241, 245, 249, 0.6);
     }
 
-    @keyframes textShimmer {
+    @keyframes simpleColorShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    @keyframes multiColorRotate {
-      0% { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
-    }
-    @keyframes bounceGlow {
-      0%, 100% { transform: translateY(0) scale(1); text-shadow: 0 0 15px rgba(255, 50, 50, 0.9), 0 0 30px rgba(255, 0, 0, 0.7); }
-      50% { transform: translateY(-3px) scale(1.05); text-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 77, 77, 1), 0 0 60px rgba(255, 0, 0, 0.9); }
-    }
     .gaadi-expert-effect {
-      background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff00ff, #ff0000);
-      background-size: 600% 600%;
+      background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #3b82f6, #6366f1);
+      background-size: 300% auto;
       color: transparent;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: textShimmer 3s ease infinite, multiColorRotate 5s linear infinite, bounceGlow 2s ease-in-out infinite;
+      animation: simpleColorShift 6s ease infinite;
       display: inline-block;
-    }
-    @keyframes carPulse {
-      0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
-      50% { transform: scale(1.15) rotate(-3deg); filter: drop-shadow(0 0 15px rgba(239, 68, 68, 1)); }
-    }
-    .animated-car-icon {
-      animation: carPulse 2s ease-in-out infinite;
     }
 
     @keyframes borderDashFlow {
@@ -138,7 +123,7 @@
       <div class="flex items-center gap-3">
         <div>
           <div class="flex items-center gap-2.5">
-            <i class="ph-fill ph-car-profile text-red-500 text-2xl animated-car-icon"></i>
+            <i class="ph-fill ph-car-profile text-indigo-400 text-2xl"></i>
             <span class="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase gaadi-expert-effect">GAADI EXPERTS</span>
           </div>
           <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
@@ -393,52 +378,50 @@
             <input type="text" id="location" required placeholder="e.g. Workshop / Dealership Address with Pin code & City" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
           </div>
-        </div>
-      </div>
 
-      <!-- Upload Images Section -->
-      <div class="moving-dash-border p-6 sm:p-8 transition-all">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-2">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <i class="ph-fill ph-images text-indigo-600 text-xl"></i>
-              Vehicle Photos Upload
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Sabhi photos report me lagengi (koi image miss nahi hogi)</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="imageCounter" class="text-xs font-semibold px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full">
-              0 photos selected
-            </span>
-          </div>
-        </div>
-
-        <!-- Dropzone Area -->
-        <div id="dropZone" class="border-2 border-dashed border-indigo-200 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-50/70 rounded-xl p-4 sm:p-5 text-center cursor-pointer transition-all duration-200 group">
-          <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-          <div class="flex items-center justify-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-indigo-100 group-hover:scale-105 flex items-center justify-center text-indigo-600 transition duration-200 shrink-0">
-              <i class="ph ph-cloud-arrow-up text-xl"></i>
+          <!-- Compact Vehicle Photos Upload (Right below Location) -->
+          <div class="sm:col-span-2 lg:col-span-3 pt-3 border-t border-slate-100 mt-2">
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Vehicle Photos Upload <span class="text-rose-500 font-bold">*</span>
+              </label>
+              <span id="imageCounter" class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                0 photos selected
+              </span>
             </div>
-            <div class="text-left">
-              <p class="text-xs sm:text-sm font-semibold text-slate-800">
-                Click karke photos choose karein ya yahan Drag & Drop karein
-              </p>
-              <p class="text-[11px] text-slate-500 mt-0.5">Ek saath multiple images select kar sakte hain (JPG, PNG, WebP)</p>
-            </div>
-          </div>
-        </div>
 
-        <!-- Image Previews Container -->
-        <div id="previewSection" class="mt-6 hidden">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-semibold text-slate-700">Selected Photos Preview:</h3>
-            <button id="clearAllImagesBtn" type="button" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
-              <i class="ph ph-trash"></i> Remove All
-            </button>
-          </div>
-          <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <!-- Dynamic thumbnails added here -->
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+              <!-- Compact Dropzone / File Select Box -->
+              <div id="dropZone" class="flex-1 w-full border border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/30 hover:bg-indigo-50/60 rounded-xl p-3 text-center cursor-pointer transition flex items-center gap-3">
+                <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                  <i class="ph ph-camera text-lg"></i>
+                </div>
+                <div class="text-left truncate">
+                  <p class="text-xs font-semibold text-slate-800 truncate">Click karke photos choose karein ya yahan Drag & Drop karein</p>
+                  <p class="text-[11px] text-slate-500">Multiple images (JPG, PNG, WebP)</p>
+                </div>
+              </div>
+
+              <!-- Add Photo + Button with Icon -->
+              <button type="button" onclick="document.getElementById('fileInput').click()" class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition cursor-pointer shrink-0">
+                <i class="ph ph-plus text-sm font-bold"></i>
+                Add Photo +
+              </button>
+            </div>
+
+            <!-- Image Previews Container -->
+            <div id="previewSection" class="mt-4 hidden">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold text-slate-700">Selected Photos Preview:</span>
+                <button id="clearAllImagesBtn" type="button" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
+                  <i class="ph ph-trash"></i> Remove All
+                </button>
+              </div>
+              <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                <!-- Dynamic thumbnails added here -->
+              </div>
+            </div>
           </div>
         </div>
       </div>
