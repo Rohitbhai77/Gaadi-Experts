@@ -14,24 +14,71 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    @keyframes bgGradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     body {
       font-family: 'Inter', sans-serif;
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+      background-size: 400% 400%;
+      animation: bgGradientShift 15s ease infinite;
     }
+
+    :root, body, body[data-theme="indigo"] {
+      --theme-color: #6366f1;
+      --theme-glow: rgba(99, 102, 241, 0.35);
+      --theme-bg: rgba(238, 242, 255, 0.6);
+    }
+    body[data-theme="emerald"] {
+      --theme-color: #10b981;
+      --theme-glow: rgba(16, 185, 129, 0.35);
+      --theme-bg: rgba(236, 253, 245, 0.6);
+    }
+    body[data-theme="blue"] {
+      --theme-color: #3b82f6;
+      --theme-glow: rgba(59, 130, 246, 0.35);
+      --theme-bg: rgba(239, 246, 255, 0.6);
+    }
+    body[data-theme="rose"] {
+      --theme-color: #f43f5e;
+      --theme-glow: rgba(244, 63, 94, 0.35);
+      --theme-bg: rgba(255, 241, 242, 0.6);
+    }
+    body[data-theme="amber"] {
+      --theme-color: #f59e0b;
+      --theme-glow: rgba(245, 158, 11, 0.35);
+      --theme-bg: rgba(254, 252, 232, 0.6);
+    }
+    body[data-theme="slate"] {
+      --theme-color: #64748b;
+      --theme-glow: rgba(100, 116, 139, 0.35);
+      --theme-bg: rgba(241, 245, 249, 0.6);
+    }
+
     @keyframes textShimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes multiColorRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
     }
     @keyframes bounceGlow {
       0%, 100% { transform: translateY(0) scale(1); text-shadow: 0 0 15px rgba(255, 50, 50, 0.9), 0 0 30px rgba(255, 0, 0, 0.7); }
       50% { transform: translateY(-3px) scale(1.05); text-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 77, 77, 1), 0 0 60px rgba(255, 0, 0, 0.9); }
     }
     .gaadi-expert-effect {
-      background: linear-gradient(90deg, #ff4d4d 0%, #ffdf00 25%, #ffffff 50%, #ffdf00 75%, #ff4d4d 100%);
-      background-size: 250% auto;
+      background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff, #ff00ff, #ff0000);
+      background-size: 600% 600%;
       color: transparent;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: textShimmer 2s linear infinite, bounceGlow 2s ease-in-out infinite;
+      animation: textShimmer 3s ease infinite, multiColorRotate 5s linear infinite, bounceGlow 2s ease-in-out infinite;
       display: inline-block;
     }
     @keyframes carPulse {
@@ -41,12 +88,45 @@
     .animated-car-icon {
       animation: carPulse 2s ease-in-out infinite;
     }
+
+    @keyframes borderDashFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .moving-dash-border {
+      position: relative;
+      border-radius: 1rem;
+      background: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .moving-dash-border::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 1.15rem;
+      border: 3px dashed transparent;
+      background: linear-gradient(90deg, #ff4d4d, #ffdf00, #00ffcc, #3b82f6, #9333ea, #ff4d4d);
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: borderDashFlow 4s linear infinite;
+    }
+
+    .hover-dash {
+      transition: all 0.25s ease;
+    }
+    .hover-dash:hover {
+      border-style: dashed !important;
+      border-color: var(--theme-color) !important;
+      box-shadow: 0 0 12px var(--theme-glow) !important;
+    }
+
     .filled-glow {
-      font-weight: 700 !important;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4), 0 0 30px rgba(99, 102, 241, 0.2);
-      border-color: #6366f1 !important;
-      background-color: rgba(238, 242, 255, 0.7) !important;
-      transition: all 0.3s ease;
+      font-weight: 500 !important;
+      border-color: var(--theme-color) !important;
+      box-shadow: 0 0 10px var(--theme-glow), inset 0 0 4px var(--theme-glow) !important;
+      background-color: var(--theme-bg) !important;
     }
   </style>
 </head>
@@ -98,7 +178,7 @@
     <form id="reportForm" class="space-y-8" onsubmit="event.preventDefault();">
       
       <!-- Top Grid: Form Details -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 transition-all hover:shadow-md">
+      <div class="moving-dash-border p-6 sm:p-8 transition-all">
         <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
           <div>
             <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -317,7 +397,7 @@
       </div>
 
       <!-- Upload Images Section -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 transition-all hover:shadow-md">
+      <div class="moving-dash-border p-6 sm:p-8 transition-all">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-2">
           <div>
             <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -534,6 +614,7 @@
 
     // Theme Switcher Function
     function switchTheme(newTheme, save = true) {
+      document.body.setAttribute('data-theme', newTheme);
       const themes = ['indigo', 'emerald', 'blue', 'rose', 'amber', 'slate'];
       const activeTheme = localStorage.getItem('gaadi_theme') || 'indigo';
       
@@ -569,17 +650,20 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('gaadi_theme') || 'indigo';
+      document.body.setAttribute('data-theme', savedTheme);
       if (savedTheme !== 'indigo') {
         switchTheme(savedTheme, false);
       }
       initFolderSelection();
 
-      // Initialize field glow on inputs & selects
+      // Initialize field glow & hover dash on inputs & selects
       const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
       formInputs.forEach(el => {
+        el.classList.add('hover-dash');
         updateFieldGlow(el);
         el.addEventListener('input', () => updateFieldGlow(el));
         el.addEventListener('change', () => updateFieldGlow(el));
+        el.addEventListener('blur', () => updateFieldGlow(el));
       });
     });
 
