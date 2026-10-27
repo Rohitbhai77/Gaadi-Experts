@@ -1,185 +1,450 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vehicle PDF Finder & ZIP Maker</title>
-<style>
-:root{font-family:Arial,Helvetica,sans-serif;color:#172033;background:#f3f6fb}
-*{box-sizing:border-box}
-body{margin:0;padding:24px}
-.wrap{max-width:1050px;margin:auto}
-header{background:#172554;color:white;padding:24px;border-radius:16px;margin-bottom:18px}
-h1{margin:0 0 8px;font-size:27px} header p{margin:0;color:#dbeafe;line-height:1.5}
-.panel{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #1e293b0a}
-h2{font-size:19px;margin:0 0 14px}
-label{display:block;font-weight:700;margin:12px 0 7px}
-input[type=text],textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}
-textarea{min-height:120px;resize:vertical;line-height:1.5}
-input[type=file]{max-width:100%;margin:8px 0}
-.small{font-size:13px;color:#64748b;line-height:1.5}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.group{border:1px solid #dbe3ef;border-radius:12px;padding:15px;margin-top:14px;background:#fbfdff}
-.group-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.group-head h3{margin:0;font-size:16px}
-button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}
-.primary{background:#1d4ed8;color:white}.secondary{background:#e2e8f0;color:#172033}.danger{background:#fee2e2;color:#991b1b}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-.status{padding:12px;border-radius:9px;background:#eff6ff;color:#1e40af;margin-top:12px;white-space:pre-wrap}
-.status.error{background:#fef2f2;color:#991b1b}.status.success{background:#f0fdf4;color:#166534}
-.results{margin-top:12px}
-.result{border:1px solid #dbe3ef;border-radius:10px;padding:13px;margin:9px 0}
-.result strong{display:block;margin-bottom:6px}
-ul{margin:7px 0 0;padding-left:22px;overflow-wrap:anywhere}
-footer{color:#64748b;font-size:12px;text-align:center;padding:14px}
-@media(max-width:650px){body{padding:12px}.row{grid-template-columns:1fr}header{padding:19px}h1{font-size:23px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle PDF Finder & ZIP Maker</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- JSZip Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    @keyframes bgGradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+      background-size: 400% 400%;
+      animation: bgGradientShift 15s ease infinite;
+    }
+
+    :root, body, body[data-theme="indigo"] {
+      --theme-color: #6366f1;
+      --theme-glow: rgba(99, 102, 241, 0.35);
+      --theme-bg: rgba(238, 242, 255, 0.6);
+    }
+    body[data-theme="emerald"] {
+      --theme-color: #10b981;
+      --theme-glow: rgba(16, 185, 129, 0.35);
+      --theme-bg: rgba(236, 253, 245, 0.6);
+    }
+    body[data-theme="blue"] {
+      --theme-color: #3b82f6;
+      --theme-glow: rgba(59, 130, 246, 0.35);
+      --theme-bg: rgba(239, 246, 255, 0.6);
+    }
+    body[data-theme="rose"] {
+      --theme-color: #f43f5e;
+      --theme-glow: rgba(244, 63, 94, 0.35);
+      --theme-bg: rgba(255, 241, 242, 0.6);
+    }
+    body[data-theme="amber"] {
+      --theme-color: #f59e0b;
+      --theme-glow: rgba(245, 158, 11, 0.35);
+      --theme-bg: rgba(254, 252, 232, 0.6);
+    }
+    body[data-theme="slate"] {
+      --theme-color: #64748b;
+      --theme-glow: rgba(100, 116, 139, 0.35);
+      --theme-bg: rgba(241, 245, 249, 0.6);
+    }
+
+    @keyframes simpleColorShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .gaadi-expert-effect {
+      background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #3b82f6, #6366f1);
+      background-size: 300% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: simpleColorShift 6s ease infinite;
+      display: inline-block;
+    }
+
+    @keyframes borderDashFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .moving-dash-border {
+      position: relative;
+      border-radius: 1rem;
+      background: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .moving-dash-border::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 1.15rem;
+      border: 3px dashed transparent;
+      background: linear-gradient(90deg, #ff4d4d, #ffdf00, #00ffcc, #3b82f6, #9333ea, #ff4d4d);
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: borderDashFlow 4s linear infinite;
+    }
+
+    .hover-dash {
+      transition: all 0.25s ease;
+    }
+    .hover-dash:hover {
+      border-style: dashed !important;
+      border-color: var(--theme-color) !important;
+      box-shadow: 0 0 12px var(--theme-glow) !important;
+    }
+
+    .filled-glow {
+      font-weight: 500 !important;
+      border-color: var(--theme-color) !important;
+      box-shadow: 0 0 10px var(--theme-glow), inset 0 0 4px var(--theme-glow) !important;
+      background-color: var(--theme-bg) !important;
+    }
+  </style>
 </head>
-<body>
-<div class="wrap">
-<header>
-<h1>Vehicle PDF Finder & ZIP Maker</h1>
-<p>Search vehicle registration numbers inside PDF filenames and create a separate ZIP for each recipient.</p>
-</header>
+<body class="min-h-full flex flex-col text-slate-800 pb-28">
 
-<section class="panel">
-<h2>1. Select your PDF folder</h2>
-<p class="small">Choose the folder containing your vehicle PDFs. Files are processed in your browser; they are not uploaded to a server.</p>
-<input id="folderInput" type="file" webkitdirectory directory multiple accept=".pdf,application/pdf">
-<div id="folderStatus" class="status">No folder selected yet.</div>
-</section>
+  <!-- Header -->
+  <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-700 transition-colors duration-300">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <i class="ph-fill ph-car-profile text-indigo-400 text-2xl"></i>
+            <span class="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase gaadi-expert-effect">GAADI EXPERTS</span>
+          </div>
+          <p class="text-xs text-indigo-200 font-medium">Vehicle PDF Finder & ZIP Maker</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
+        <!-- Home Button -->
+        <a href="INDEX.HTML" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer" title="Go to Index Page">
+          <i class="ph ph-house text-base text-indigo-200"></i>
+          <span>Home</span>
+        </a>
 
-<section class="panel">
-<h2>2. Add recipients and vehicle numbers</h2>
-<p class="small">For each person, enter a name and paste vehicle numbers. Use one number per line, or separate them with commas/spaces. Example: KL06F5207</p>
-<div id="groups"></div>
-<div class="actions">
-<button class="secondary" id="addGroup">+ Add another recipient</button>
-<button class="primary" id="makeZips">Find PDFs & create ZIPs</button>
-<button class="secondary" id="downloadAll" disabled>Download all ZIPs together</button>
-</div>
-<div id="mainStatus" class="status">Select a folder and add at least one recipient to begin.</div>
-<div id="results" class="results"></div>
-</section>
-<footer>Works best in current Google Chrome or Microsoft Edge. Keep this page open until ZIP creation and downloads finish.</footer>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>
-const folderInput=document.getElementById('folderInput');
-const folderStatus=document.getElementById('folderStatus');
-const groupsEl=document.getElementById('groups');
-const mainStatus=document.getElementById('mainStatus');
-const resultsEl=document.getElementById('results');
-const downloadAllBtn=document.getElementById('downloadAll');
-let pdfFiles=[];
-let madeZips=[];
-let groupCounter=0;
+        <!-- Theme Selector -->
+        <div class="inline-flex items-center gap-1.5 bg-indigo-800 text-white px-3 py-2 rounded-xl border border-indigo-700 shadow-sm">
+          <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden md:inline">Theme:</label>
+          <select id="themeSelector" onchange="switchTheme(this.value)" class="bg-transparent text-white text-xs sm:text-sm outline-none cursor-pointer transition">
+            <option value="indigo">Indigo (Default)</option>
+            <option value="emerald">Emerald Green</option>
+            <option value="blue">Royal Blue</option>
+            <option value="rose">Crimson Rose</option>
+            <option value="amber">Amber Gold</option>
+            <option value="slate">Dark Slate</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
 
-function normalize(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function safeName(s){return (s||'Recipient').trim().replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').replace(/\s+/g,'_').slice(0,70)||'Recipient';}
-function addGroup(name='',numbers=''){
- groupCounter++;
- const div=document.createElement('div');div.className='group';div.dataset.groupId=String(groupCounter);
- div.innerHTML=`<div class="group-head"><h3>Recipient ${groupCounter}</h3><button type="button" class="danger remove">Remove</button></div>
- <label>Recipient / ZIP name</label><input class="recipient" type="text" placeholder="e.g. Mayur" value="">
- <label>Vehicle numbers</label><textarea class="numbers" placeholder="KL06F5207&#10;KL07CZ9988&#10;MH15KK6122"></textarea>
- <div class="small">Only PDFs matching these vehicle numbers will be included in this recipient's ZIP.</div>`;
- div.querySelector('.recipient').value=name;
- div.querySelector('.numbers').value=numbers;
- div.querySelector('.remove').addEventListener('click',()=>{div.remove();refreshGroupTitles();});
- groupsEl.appendChild(div);
- refreshGroupTitles();
-}
-function refreshGroupTitles(){[...groupsEl.querySelectorAll('.group')].forEach((g,i)=>g.querySelector('h3').textContent='Recipient '+(i+1));}
-folderInput.addEventListener('change',()=>{
- pdfFiles=[...folderInput.files].filter(f=>f.name.toLowerCase().endsWith('.pdf'));
- folderStatus.textContent=`Selected ${folderInput.files.length} file(s); found ${pdfFiles.length} PDF(s).`;
- folderStatus.className='status '+(pdfFiles.length?'success':'error');
- mainStatus.textContent=pdfFiles.length?'Folder is ready. Add vehicle numbers and create ZIPs.':'No PDF files found. Please select the correct folder.';
- resultsEl.innerHTML='';madeZips=[];downloadAllBtn.disabled=true;
-});
-function getNumbers(text){
- return [...new Set((text||'').split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean).map(normalize).filter(Boolean))];
-}
-function findMatches(number){
- return pdfFiles.filter(f=>normalize(f.name).includes(number));
-}
-function saveBlob(blob,filename){
- const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;
- document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-}
-document.getElementById('addGroup').addEventListener('click',()=>addGroup());
-document.getElementById('makeZips').addEventListener('click',async()=>{
- resultsEl.innerHTML='';madeZips=[];downloadAllBtn.disabled=true;
- if(!window.JSZip){mainStatus.textContent='ZIP library could not load. Check your internet connection, reload this page, and try again.';mainStatus.className='status error';return;}
- if(!pdfFiles.length){mainStatus.textContent='First select the folder that contains your PDFs.';mainStatus.className='status error';return;}
- const groups=[...groupsEl.querySelectorAll('.group')];
- if(!groups.length){mainStatus.textContent='Please add at least one recipient.';mainStatus.className='status error';return;}
- const plans=[];const globallyUsed=new Map();
- for(let i=0;i<groups.length;i++){
-  const el=groups[i],name=el.querySelector('.recipient').value.trim()||`Recipient_${i+1}`;
-  const numbers=getNumbers(el.querySelector('.numbers').value);
-  if(!numbers.length){plans.push({name,numbers:[],matches:[],missing:[],duplicates:[],error:'No vehicle numbers entered.'});continue;}
-  const matchMap=new Map(),missing=[],duplicates=[];
-  for(const n of numbers){
-   const found=findMatches(n);
-   if(!found.length)missing.push(n);
-   if(found.length>1)duplicates.push({number:n,files:found.map(f=>f.name)});
-   found.forEach(f=>matchMap.set(f.name,f));
-   if(found.length)globallyUsed.set(name+'|'+n,true);
-  }
-  plans.push({name,numbers,matches:[...matchMap.values()],missing,duplicates});
- }
- mainStatus.textContent='Preparing ZIP files… please wait.';
- mainStatus.className='status';
- const allZip=new JSZip();
- let successful=0;
- for(let i=0;i<plans.length;i++){
-  const p=plans[i],card=document.createElement('div');card.className='result';
-  const title=document.createElement('strong');title.textContent=p.name;card.appendChild(title);
-  if(!p.matches.length){
-   const msg=document.createElement('div');msg.textContent=p.error||'No matching PDFs found; no ZIP created.';card.appendChild(msg);
-  }else{
-   const zip=new JSZip();
-   for(const f of p.matches){zip.file(f.name,f);}
-   try{
-    const blob=await zip.generateAsync({type:'blob'});
-    const filename=safeName(p.name)+'_PDFs.zip';
-    madeZips.push({name:filename,blob});
-    allZip.file(filename,blob);
-    successful++;
-    const msg=document.createElement('div');msg.textContent=`Found ${p.matches.length} PDF(s).`;card.appendChild(msg);
-    const btn=document.createElement('button');btn.className='primary';btn.textContent='Download '+filename;btn.style.marginTop='10px';
-    btn.addEventListener('click',()=>saveBlob(blob,filename));card.appendChild(btn);
-    const list=document.createElement('ul');
-    p.matches.forEach(f=>{const li=document.createElement('li');li.textContent=f.name;list.appendChild(li);});
-    card.appendChild(list);
-   }catch(e){const msg=document.createElement('div');msg.textContent='ZIP creation failed: '+e.message;card.appendChild(msg);}
-  }
-  if(p.missing.length){const m=document.createElement('div');m.style.marginTop='8px';m.textContent='Not found: '+p.missing.join(', ');card.appendChild(m);}
-  if(p.duplicates.length){
-   const d=document.createElement('div');d.style.marginTop='8px';d.textContent='Multiple filename matches (all included):';card.appendChild(d);
-   const ul=document.createElement('ul');
-   p.duplicates.forEach(item=>{const li=document.createElement('li');li.textContent=item.number+': '+item.files.join(' | ');ul.appendChild(li);});
-   card.appendChild(ul);
-  }
-  resultsEl.appendChild(card);
- }
- if(successful){
-  const allBlob=await allZip.generateAsync({type:'blob'});
-  madeZips.all={name:'All_Recipients_ZIPs.zip',blob:allBlob};
-  downloadAllBtn.disabled=false;
-  mainStatus.textContent=`Done. Created ${successful} recipient ZIP(s). Review each result and download the required ZIP(s).`;
-  mainStatus.className='status success';
- }else{
-  mainStatus.textContent='No ZIPs were created. Check the vehicle numbers and filenames.';
-  mainStatus.className='status error';
- }
-});
-downloadAllBtn.addEventListener('click',()=>{
- if(madeZips.all)saveBlob(madeZips.all.blob,madeZips.all.name);
-});
-addGroup('Recipient 1','');
-</script>
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Section 1: Select your PDF folder -->
+    <div class="moving-dash-border p-6 sm:p-8 transition-all">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="ph-fill ph-folder-open text-indigo-600 text-xl"></i>
+            1. Select your PDF folder
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Choose the folder containing your vehicle PDFs. Files are processed in your browser; they are not uploaded to a server.</p>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 hidden sm:inline">Step 1</span>
+      </div>
+
+      <div class="space-y-4">
+        <input id="folderInput" type="file" webkitdirectory directory multiple accept=".pdf,application/pdf" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white cursor-pointer">
+        <div id="folderStatus" class="p-3 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-700 border border-slate-200">No folder selected yet.</div>
+      </div>
+    </div>
+
+    <!-- Section 2: Add recipients and vehicle numbers -->
+    <div class="moving-dash-border p-6 sm:p-8 transition-all">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="ph-fill ph-users text-indigo-600 text-xl"></i>
+            2. Add recipients and vehicle numbers
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">For each person, enter a name and paste vehicle numbers. Use one number per line, or separate them with commas/spaces. Example: KL06F5207</p>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 hidden sm:inline">Step 2</span>
+      </div>
+
+      <div id="groups" class="space-y-4"></div>
+
+      <div class="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-slate-100">
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2.5 rounded-xl font-bold transition border border-indigo-200 shadow-sm cursor-pointer" id="addGroup">
+          <i class="ph ph-plus text-base"></i>
+          <span>Add another recipient</span>
+        </button>
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-200 cursor-pointer" id="makeZips">
+          <i class="ph-bold ph-file-zip text-base"></i>
+          <span>Find PDFs & create ZIPs</span>
+        </button>
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-emerald-200 cursor-pointer" id="downloadAll" disabled>
+          <i class="ph-bold ph-download-simple text-base"></i>
+          <span>Download all ZIPs together</span>
+        </button>
+      </div>
+
+      <div id="mainStatus" class="p-3 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-700 border border-slate-200 mt-4">Select a folder and add at least one recipient to begin.</div>
+      <div id="results" class="results space-y-4 mt-4"></div>
+    </div>
+
+  </main>
+
+  <footer class="text-center text-xs text-indigo-200/80 py-6">
+    Works best in current Google Chrome or Microsoft Edge. Keep this page open until ZIP creation and downloads finish.
+  </footer>
+
+  <script>
+    // Theme Switcher Function
+    function switchTheme(newTheme, save = true) {
+      document.body.setAttribute('data-theme', newTheme);
+      const themes = ['indigo', 'emerald', 'blue', 'rose', 'amber', 'slate'];
+      
+      document.querySelectorAll('*').forEach(el => {
+        let cls = el.className;
+        if (typeof cls === 'string' && cls.length > 0) {
+          themes.forEach(t => {
+            const regex = new RegExp(`\\b(bg|text|border|ring|shadow)-${t}-([a-z0-9-/]+)\\b`, 'g');
+            cls = cls.replace(regex, `$1-${newTheme}-$2`);
+          });
+          if (cls !== el.className) {
+            el.className = cls;
+          }
+        }
+      });
+
+      if (save) {
+        localStorage.setItem('gaadi_theme', newTheme);
+      }
+      const themeSelector = document.getElementById('themeSelector');
+      if (themeSelector) themeSelector.value = newTheme;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('gaadi_theme') || 'indigo';
+      document.body.setAttribute('data-theme', savedTheme);
+      if (savedTheme !== 'indigo') {
+        switchTheme(savedTheme, false);
+      }
+    });
+
+    const folderInput = document.getElementById('folderInput');
+    const folderStatus = document.getElementById('folderStatus');
+    const groupsEl = document.getElementById('groups');
+    const mainStatus = document.getElementById('mainStatus');
+    const resultsEl = document.getElementById('results');
+    const downloadAllBtn = document.getElementById('downloadAll');
+    let pdfFiles = [];
+    let madeZips = [];
+    let groupCounter = 0;
+
+    function normalize(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+    function safeName(s) { return (s || 'Recipient').trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/\s+/g, '_').slice(0, 70) || 'Recipient'; }
+
+    function addGroup(name = '', numbers = '') {
+      groupCounter++;
+      const div = document.createElement('div');
+      div.className = 'group p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3';
+      div.dataset.groupId = String(groupCounter);
+      div.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <h3 class="font-bold text-sm text-slate-800">Recipient ${groupCounter}</h3>
+          <button type="button" class="remove inline-flex items-center gap-1 text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded-lg font-bold transition cursor-pointer">
+            <i class="ph ph-trash"></i> Remove
+          </button>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Recipient / ZIP name</label>
+          <input class="recipient w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white" type="text" placeholder="e.g. Mayur" value="">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Vehicle numbers</label>
+          <textarea class="numbers w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white min-h-[100px] resize-vertical" placeholder="KL06F5207&#10;KL07CZ9988&#10;MH15KK6122"></textarea>
+          <p class="text-[11px] text-slate-500 mt-1">Only PDFs matching these vehicle numbers will be included in this recipient's ZIP.</p>
+        </div>
+      `;
+      div.querySelector('.recipient').value = name;
+      div.querySelector('.numbers').value = numbers;
+      div.querySelector('.remove').addEventListener('click', () => { div.remove(); refreshGroupTitles(); });
+      groupsEl.appendChild(div);
+      refreshGroupTitles();
+    }
+
+    function refreshGroupTitles() {
+      [...groupsEl.querySelectorAll('.group')].forEach((g, i) => g.querySelector('h3').textContent = 'Recipient ' + (i + 1));
+    }
+
+    folderInput.addEventListener('change', () => {
+      pdfFiles = [...folderInput.files].filter(f => f.name.toLowerCase().endsWith('.pdf'));
+      folderStatus.textContent = `Selected ${folderInput.files.length} file(s); found ${pdfFiles.length} PDF(s).`;
+      folderStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium border ' + (pdfFiles.length ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200');
+      mainStatus.textContent = pdfFiles.length ? 'Folder is ready. Add vehicle numbers and create ZIPs.' : 'No PDF files found. Please select the correct folder.';
+      mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium border ' + (pdfFiles.length ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-rose-50 text-rose-700 border-rose-200');
+      resultsEl.innerHTML = '';
+      madeZips = [];
+      downloadAllBtn.disabled = true;
+    });
+
+    function getNumbers(text) {
+      return [...new Set((text || '').split(/[\n,;]+/).map(x => x.trim()).filter(Boolean).map(normalize).filter(Boolean))];
+    }
+
+    function findMatches(number) {
+      return pdfFiles.filter(f => normalize(f.name).includes(number));
+    }
+
+    function saveBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
+
+    document.getElementById('addGroup').addEventListener('click', () => addGroup());
+
+    document.getElementById('makeZips').addEventListener('click', async () => {
+      resultsEl.innerHTML = '';
+      madeZips = [];
+      downloadAllBtn.disabled = true;
+      if (!window.JSZip) {
+        mainStatus.textContent = 'ZIP library could not load. Check your internet connection, reload this page, and try again.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      if (!pdfFiles.length) {
+        mainStatus.textContent = 'First select the folder that contains your PDFs.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      const groups = [...groupsEl.querySelectorAll('.group')];
+      if (!groups.length) {
+        mainStatus.textContent = 'Please add at least one recipient.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      const plans = [];
+      const globallyUsed = new Map();
+      for (let i = 0; i < groups.length; i++) {
+        const el = groups[i], name = el.querySelector('.recipient').value.trim() || `Recipient_${i + 1}`;
+        const numbers = getNumbers(el.querySelector('.numbers').value);
+        if (!numbers.length) {
+          plans.push({ name, numbers: [], matches: [], missing: [], duplicates: [], error: 'No vehicle numbers entered.' });
+          continue;
+        }
+        const matchMap = new Map(), missing = [], duplicates = [];
+        for (const n of numbers) {
+          const found = findMatches(n);
+          if (!found.length) missing.push(n);
+          if (found.length > 1) duplicates.push({ number: n, files: found.map(f => f.name) });
+          found.forEach(f => matchMap.set(f.name, f));
+          if (found.length) globallyUsed.set(name + '|' + n, true);
+        }
+        plans.push({ name, numbers, matches: [...matchMap.values()], missing, duplicates });
+      }
+      mainStatus.textContent = 'Preparing ZIP files… please wait.';
+      mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200';
+      const allZip = new JSZip();
+      let successful = 0;
+      for (let i = 0; i < plans.length; i++) {
+        const p = plans[i], card = document.createElement('div');
+        card.className = 'result p-4 bg-white border border-slate-200 rounded-xl space-y-2 shadow-sm';
+        const title = document.createElement('strong');
+        title.className = 'font-bold text-slate-800 text-sm';
+        title.textContent = p.name;
+        card.appendChild(title);
+
+        if (!p.matches.length) {
+          const msg = document.createElement('div');
+          msg.className = 'text-xs text-rose-600 font-medium';
+          msg.textContent = p.error || 'No matching PDFs found; no ZIP created.';
+          card.appendChild(msg);
+        } else {
+          const zip = new JSZip();
+          for (const f of p.matches) { zip.file(f.name, f); }
+          try {
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const filename = safeName(p.name) + '_PDFs.zip';
+            madeZips.push({ name: filename, blob });
+            allZip.file(filename, blob);
+            successful++;
+            const msg = document.createElement('div');
+            msg.className = 'text-xs text-emerald-700 font-medium';
+            msg.textContent = `Found ${p.matches.length} PDF(s).`;
+            card.appendChild(msg);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow cursor-pointer mt-2';
+            btn.innerHTML = `<i class="ph-bold ph-file-arrow-down"></i> Download ${filename}`;
+            btn.addEventListener('click', () => saveBlob(blob, filename));
+            card.appendChild(btn);
+            const list = document.createElement('ul');
+            list.className = 'list-disc pl-5 text-xs text-slate-600 space-y-1 mt-2';
+            p.matches.forEach(f => { const li = document.createElement('li'); li.textContent = f.name; list.appendChild(li); });
+            card.appendChild(list);
+          } catch (e) {
+            const msg = document.createElement('div');
+            msg.className = 'text-xs text-rose-600 font-medium';
+            msg.textContent = 'ZIP creation failed: ' + e.message;
+            card.appendChild(msg);
+          }
+        }
+        if (p.missing.length) {
+          const m = document.createElement('div');
+          m.className = 'text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-2';
+          m.textContent = 'Not found: ' + p.missing.join(', ');
+          card.appendChild(m);
+        }
+        if (p.duplicates.length) {
+          const d = document.createElement('div');
+          d.className = 'text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-2';
+          d.textContent = 'Multiple filename matches (all included):';
+          card.appendChild(d);
+          const ul = document.createElement('ul');
+          ul.className = 'list-disc pl-5 text-xs text-slate-600 space-y-1 mt-1';
+          p.duplicates.forEach(item => { const li = document.createElement('li'); li.textContent = item.number + ': ' + item.files.join(' | '); ul.appendChild(li); });
+          card.appendChild(ul);
+        }
+        resultsEl.appendChild(card);
+      }
+      if (successful) {
+        const allBlob = await allZip.generateAsync({ type: 'blob' });
+        madeZips.all = { name: 'All_Recipients_ZIPs.zip', blob: allBlob };
+        downloadAllBtn.disabled = false;
+        mainStatus.textContent = `Done. Created ${successful} recipient ZIP(s). Review each result and download the required ZIP(s).`;
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+      } else {
+        mainStatus.textContent = 'No ZIPs were created. Check the vehicle numbers and filenames.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+      }
+    });
+
+    downloadAllBtn.addEventListener('click', () => {
+      if (madeZips.all) saveBlob(madeZips.all.blob, madeZips.all.name);
+    });
+
+    addGroup('Recipient 1', '');
+  </script>
 </body>
 </html>
