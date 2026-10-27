@@ -133,31 +133,30 @@
           <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-        <div class="flex items-center gap-1.5 sm:gap-2">
-          <!-- Folder Selector Button -->
-          <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 px-3 py-2 rounded-lg font-medium transition duration-200 border border-indigo-700 cursor-pointer" title="Select Download Folder for all PDFs">
-            <i class="ph ph-folder-open text-base text-indigo-200"></i>
-            <span id="folderNameDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">Set Folder</span>
-          </button>
-        </div>
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
+        <!-- Folder Selector Button -->
+        <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer" title="Select Download Folder for all PDFs">
+          <i class="ph ph-folder-open text-base text-indigo-200"></i>
+          <span id="folderNameDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">PDF'S</span>
+        </button>
 
         <!-- Export Excel Button -->
-        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-medium transition duration-200 shadow cursor-pointer" title="Export all submitted records from cloud to Excel">
+        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-emerald-500 shadow-sm cursor-pointer" title="Export all submitted records from cloud to Excel">
           <i class="ph-bold ph-file-xls text-base"></i>
           <span>Export Excel</span>
           <span id="excelBadgeCount" class="bg-emerald-900/60 text-[11px] px-1.5 py-0.5 rounded-full font-bold ml-0.5">...</span>
         </button>
 
-        <button type="button" class="btn btn-primary"
-  onclick="window.location.href='Vehicle_PDF_Finder_ZIP_Maker.html'">
-  📁 Vehicle PDF Finder & ZIP Maker
-</button>
+        <!-- ZIP Button -->
+        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer" title="ZIP Maker">
+          <i class="ph ph-file-zip text-base"></i>
+          <span>ZIP</span>
+        </a>
 
         <!-- Theme Selector -->
-        <div class="flex items-center gap-1.5">
+        <div class="inline-flex items-center gap-1.5 bg-indigo-800 text-white px-3 py-2 rounded-xl border border-indigo-700 shadow-sm">
           <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden md:inline">Theme:</label>
-          <select id="themeSelector" onchange="switchTheme(this.value)" class="bg-indigo-800 hover:bg-indigo-900 text-white text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-indigo-700 outline-none cursor-pointer transition">
+          <select id="themeSelector" onchange="switchTheme(this.value)" class="bg-transparent text-white text-xs sm:text-sm outline-none cursor-pointer transition">
             <option value="indigo">Indigo (Default)</option>
             <option value="emerald">Emerald Green</option>
             <option value="blue">Royal Blue</option>
@@ -166,9 +165,11 @@
             <option value="slate">Dark Slate</option>
           </select>
         </div>
-        <button id="resetBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg font-medium transition duration-200">
+
+        <!-- Reset Form Button -->
+        <button id="resetBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-rose-600 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer">
           <i class="ph ph-arrow-counter-clockwise text-base"></i>
-          Reset Form
+          <span>Reset Form</span>
         </button>
       </div>
     </div>
@@ -779,6 +780,11 @@
           }
         }
       });
+    }
+
+    const zipMakerBtn = document.getElementById('zipMakerBtn');
+    if (zipMakerBtn) {
+      // Direct navigation via href attribute
     }
 
     let uploadedImages = [];
