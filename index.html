@@ -10,6 +10,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- SheetJS Library for Excel Export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
@@ -129,7 +133,7 @@
           <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
         <div class="flex items-center gap-1.5 sm:gap-2">
           <!-- Folder Selector Button -->
           <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 px-3 py-2 rounded-lg font-medium transition duration-200 border border-indigo-700 cursor-pointer" title="Select Download Folder for all PDFs">
@@ -137,6 +141,13 @@
             <span id="folderNameDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">Set Folder</span>
           </button>
         </div>
+
+        <!-- Export Excel Button -->
+        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-medium transition duration-200 shadow cursor-pointer" title="Export all submitted records from cloud to Excel">
+          <i class="ph-bold ph-file-xls text-base"></i>
+          <span>Export Excel</span>
+          <span id="excelBadgeCount" class="bg-emerald-900/60 text-[11px] px-1.5 py-0.5 rounded-full font-bold ml-0.5">...</span>
+        </button>
 
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5">
@@ -323,7 +334,7 @@
             </select>
           </div>
 
-          <!-- Fuel Type (Dropdown with exact list from image) -->
+          <!-- Fuel Type (Dropdown) -->
           <div>
             <label for="fuelType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Fuel Type <span class="text-rose-500 font-bold">*</span>
@@ -370,7 +381,7 @@
             </select>
           </div>
 
-          <!-- Location (Full Width or regular) -->
+          <!-- Location -->
           <div class="sm:col-span-2 lg:col-span-3">
             <label for="location" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Location / Address <span class="text-rose-500 font-bold">*</span>
@@ -379,7 +390,7 @@
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
           </div>
 
-          <!-- Compact Vehicle Photos Upload (Right below Location) -->
+          <!-- Vehicle Photos Upload -->
           <div class="sm:col-span-2 lg:col-span-3 pt-3 border-t border-slate-100 mt-2">
             <div class="flex items-center justify-between mb-2">
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -391,7 +402,6 @@
             </div>
 
             <div class="flex flex-col sm:flex-row items-center gap-3">
-              <!-- Compact Dropzone / File Select Box -->
               <div id="dropZone" class="flex-1 w-full border border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/30 hover:bg-indigo-50/60 rounded-xl p-3 text-center cursor-pointer transition flex items-center gap-3">
                 <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
                 <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
@@ -403,7 +413,6 @@
                 </div>
               </div>
 
-              <!-- Add Photo + Button with Icon -->
               <button type="button" onclick="document.getElementById('fileInput').click()" class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition cursor-pointer shrink-0">
                 <i class="ph ph-plus text-sm font-bold"></i>
                 Add Photo +
@@ -419,7 +428,7 @@
                 </button>
               </div>
               <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                <!-- Dynamic thumbnails added here -->
+                <!-- Dynamic thumbnails -->
               </div>
             </div>
           </div>
@@ -460,10 +469,9 @@
     </div>
   </div>
 
-  <!-- Preview Modal (Left: Details, Right: Scrollable Photos) -->
+  <!-- Preview Modal -->
   <div id="previewModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
     <div class="bg-white rounded-2xl max-w-7xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden">
-      <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
         <div>
           <h3 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -477,20 +485,17 @@
         </button>
       </div>
 
-      <!-- Modal Body (Split Layout - Photos Given Much More Space) -->
       <div class="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-4 p-4 sm:p-6 bg-slate-50/50">
-        <!-- Left Side: Filled Details (Non-scrollable / Scrollable if needed) -->
+        <!-- Left Side: Filled Details -->
         <div class="md:col-span-4 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col overflow-y-auto max-h-[75vh] md:max-h-[82vh]">
           <h4 class="text-sm sm:text-base font-bold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
             <i class="ph-fill ph-car-profile text-indigo-600 text-lg"></i>
             Filled Vehicle & Claim Details
           </h4>
-          <div id="previewDetailsList" class="space-y-2 text-xs sm:text-sm pr-1">
-            <!-- Dynamic Details -->
-          </div>
+          <div id="previewDetailsList" class="space-y-2 text-xs sm:text-sm pr-1"></div>
         </div>
 
-        <!-- Right Side: Uploaded Photos (Scrollable Top to Bottom with Large View) -->
+        <!-- Right Side: Photos -->
         <div class="md:col-span-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
             <h4 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
@@ -499,14 +504,10 @@
             </h4>
             <span class="text-xs text-indigo-600 font-semibold">Scroll down to check all photos</span>
           </div>
-          <!-- Scrollable Photos Container -->
-          <div id="previewPhotosScrollContainer" class="flex-1 overflow-y-auto max-h-[72vh] md:max-h-[80vh] space-y-6 pr-2">
-            <!-- Dynamic scrollable photos list -->
-          </div>
+          <div id="previewPhotosScrollContainer" class="flex-1 overflow-y-auto max-h-[72vh] md:max-h-[80vh] space-y-6 pr-2"></div>
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div class="px-6 py-4 border-t border-slate-200 bg-white flex items-center justify-end gap-3">
         <button id="cancelPreviewBtn" type="button" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 text-sm transition">
           Back to Edit
@@ -534,7 +535,112 @@
   </div>
 
   <script>
-    // IndexedDB Helper for saving directory handle
+    // --- SUPABASE CLOUD DATABASE CONFIGURATION ---
+    const SUPABASE_URL = 'https://qtftkrssonozonsxhiqn.supabase.co';
+    // Yahan apni copied Publishable Key paste karein:
+    const SUPABASE_ANON_KEY = 'sb_publishable_bUvA4RRkBVqs8hq5o8_XNg_DOSfV7fY';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Fetch and show total records count from Cloud in badge
+    async function updateExcelBadge() {
+      try {
+        const { count, error } = await supabaseClient
+          .from('vehicle_inspections')
+          .select('*', { count: 'exact', head: true });
+        
+        if (!error && count !== null) {
+          const badge = document.getElementById('excelBadgeCount');
+          if (badge) badge.textContent = count;
+        }
+      } catch (err) {
+        console.warn('Could not fetch cloud count:', err);
+      }
+    }
+
+    // Save record to Supabase
+    async function saveRecordToDatabase(recordData) {
+      try {
+        const { error } = await supabaseClient
+          .from('vehicle_inspections')
+          .insert([recordData]);
+
+        if (error) {
+          console.error('Supabase Save Error:', error.message);
+        } else {
+          updateExcelBadge();
+        }
+      } catch (err) {
+        console.error('Cloud Sync Failed:', err);
+      }
+    }
+
+    // Export ALL Team Records to Excel
+    async function exportToExcel() {
+      showAlert('Server se sabhi team members ka data download ho raha hai...', 'success');
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('vehicle_inspections')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (error || !data || data.length === 0) {
+          showAlert('Database me abhi koi data nahi mila.', 'error');
+          return;
+        }
+
+        const formattedData = data.map((item, index) => ({
+          "S.No": index + 1,
+          "Date & Time": new Date(item.created_at).toLocaleString('en-IN'),
+          "Claim Number": item.claim_number,
+          "Vehicle Number": item.vehicle_number,
+          "Insurance Company": item.insurance_company,
+          "Make & Model": item.make_model,
+          "Manufacturing Year": item.mfg_year,
+          "Registration Year": item.reg_year,
+          "Quote Type": item.quote_type,
+          "Fuel Type": item.fuel_type,
+          "Ownership": item.ownership,
+          "Location": item.location,
+          "Photos Count": item.photos_count
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(formattedData);
+
+        ws['!cols'] = [
+          { wch: 6 },
+          { wch: 20 },
+          { wch: 18 },
+          { wch: 16 },
+          { wch: 22 },
+          { wch: 22 },
+          { wch: 18 },
+          { wch: 18 },
+          { wch: 14 },
+          { wch: 16 },
+          { wch: 14 },
+          { wch: 45 },
+          { wch: 14 }
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'All Team Reports');
+
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const filename = `Gaadi_Experts_All_Records_${dateStr}.xlsx`;
+
+        XLSX.writeFile(wb, filename);
+        showAlert(`Sabhi ${data.length} records ki Excel file download ho gayi!`, 'success');
+      } catch (err) {
+        console.error('Export Error:', err);
+        showAlert('Excel download karne me error aayi.', 'error');
+      }
+    }
+
+    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+
+    // --- IndexedDB & Directory Picker ---
     const DB_NAME = 'GaadiExpertsDB';
     const STORE_NAME = 'settings';
     const KEY_HANDLE = 'downloadDirHandle';
@@ -599,13 +705,11 @@
     function switchTheme(newTheme, save = true) {
       document.body.setAttribute('data-theme', newTheme);
       const themes = ['indigo', 'emerald', 'blue', 'rose', 'amber', 'slate'];
-      const activeTheme = localStorage.getItem('gaadi_theme') || 'indigo';
       
       document.querySelectorAll('*').forEach(el => {
         let cls = el.className;
         if (typeof cls === 'string' && cls.length > 0) {
           themes.forEach(t => {
-            // Replace e.g. bg-indigo-900 -> bg-emerald-900, text-indigo-200 -> text-emerald-200, etc.
             const regex = new RegExp(`\\b(bg|text|border|ring|shadow)-${t}-([a-z0-9-/]+)\\b`, 'g');
             cls = cls.replace(regex, `$1-${newTheme}-$2`);
           });
@@ -622,7 +726,6 @@
       if (themeSelector) themeSelector.value = newTheme;
     }
 
-    // Load saved theme and folder handle on startup
     function updateFieldGlow(el) {
       if (el.value && el.value.trim() !== '') {
         el.classList.add('filled-glow');
@@ -638,8 +741,8 @@
         switchTheme(savedTheme, false);
       }
       initFolderSelection();
+      updateExcelBadge();
 
-      // Initialize field glow & hover dash on inputs & selects
       const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
       formInputs.forEach(el => {
         el.classList.add('hover-dash');
@@ -650,36 +753,29 @@
       });
     });
 
-    // Folder Select Button Event Listener
-    document.addEventListener('DOMContentLoaded', () => {
-      const folderSelectBtn = document.getElementById('folderSelectBtn');
-      if (folderSelectBtn) {
-        folderSelectBtn.addEventListener('click', async () => {
-          if (!window.showDirectoryPicker) {
-            showAlert('Aapka browser File System Access API support nahi karta. PDFs default browser download folder me save hongi.', 'error');
-            return;
+    const folderSelectBtn = document.getElementById('folderSelectBtn');
+    if (folderSelectBtn) {
+      folderSelectBtn.addEventListener('click', async () => {
+        if (!window.showDirectoryPicker) {
+          showAlert('Aapka browser File System Access API support nahi karta. PDFs default browser download folder me save hongi.', 'error');
+          return;
+        }
+        try {
+          const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+          if (handle) {
+            savedDirectoryHandle = handle;
+            await saveDirHandle(handle);
+            updateFolderDisplay(handle.name);
+            showAlert(`Download folder set: "${handle.name}". Ab saari PDFs isi folder me save hongi!`, 'success');
           }
-          try {
-            const handle = await window.showDirectoryPicker({
-              mode: 'readwrite'
-            });
-            if (handle) {
-              savedDirectoryHandle = handle;
-              await saveDirHandle(handle);
-              updateFolderDisplay(handle.name);
-              showAlert(`Download folder set: "${handle.name}". Ab saari PDFs isi folder me save hongi!`, 'success');
-            }
-          } catch (err) {
-            if (err.name !== 'AbortError') {
-              console.error('Folder selection error:', err);
-              showAlert('Folder select karne me error aayi.', 'error');
-            }
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            showAlert('Folder select karne me error aayi.', 'error');
           }
-        });
-      }
-    });
+        }
+      });
+    }
 
-    // State to hold all uploaded image objects { id, file, dataUrl, name }
     let uploadedImages = [];
     let draggedIndex = null;
 
@@ -710,7 +806,6 @@
       renderThumbnails();
     };
 
-    // DOM Elements
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const previewSection = document.getElementById('previewSection');
@@ -724,7 +819,6 @@
     const loadingStatusText = document.getElementById('loadingStatusText');
     const progressBar = document.getElementById('progressBar');
 
-    // Drag and Drop triggers
     dropZone.addEventListener('click', () => fileInput.click());
 
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -742,43 +836,35 @@
     });
 
     dropZone.addEventListener('drop', (e) => {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      handleFiles(files);
+      handleFiles(e.dataTransfer.files);
     });
 
     fileInput.addEventListener('change', (e) => {
       handleFiles(e.target.files);
     });
 
-    // Handle files upload
     function handleFiles(files) {
       if (!files || files.length === 0) return;
-
       Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) {
           showAlert('Kripya sirf image files hi upload karein.', 'error');
           return;
         }
-
         const reader = new FileReader();
         reader.onload = function(e) {
-          const imageObj = {
+          uploadedImages.push({
             id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
             file: file,
             dataUrl: e.target.result,
             name: file.name
-          };
-          uploadedImages.push(imageObj);
+          });
           renderThumbnails();
         };
         reader.readAsDataURL(file);
       });
-      // Reset input value so same files can be chosen again if needed
       fileInput.value = '';
     }
 
-    // Render Preview Thumbnails
     function renderThumbnails() {
       thumbnailsContainer.innerHTML = '';
       const count = uploadedImages.length;
@@ -788,7 +874,6 @@
         previewSection.classList.add('hidden');
         return;
       }
-
       previewSection.classList.remove('hidden');
 
       uploadedImages.forEach((img, index) => {
@@ -809,10 +894,10 @@
               </button>
             </div>
             <div class="flex items-center gap-1.5">
-              <button type="button" onclick="moveImage(${index}, -1)" ${index === 0 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Left / Forward" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
+              <button type="button" onclick="moveImage(${index}, -1)" ${index === 0 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Left" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
                 <i class="ph ph-arrow-left"></i>
               </button>
-              <button type="button" onclick="moveImage(${index}, 1)" ${index === uploadedImages.length - 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Right / Backward" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
+              <button type="button" onclick="moveImage(${index}, 1)" ${index === uploadedImages.length - 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Right" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
                 <i class="ph ph-arrow-right"></i>
               </button>
             </div>
@@ -825,19 +910,16 @@
       });
     }
 
-    // Remove single image
     window.removeImage = function(id) {
       uploadedImages = uploadedImages.filter(img => img.id !== id);
       renderThumbnails();
     };
 
-    // Remove all images
     clearAllImagesBtn.addEventListener('click', () => {
       uploadedImages = [];
       renderThumbnails();
     });
 
-    // Alert Message Function (replaces native alert)
     function showAlert(message, type = 'error') {
       statusAlert.textContent = message;
       statusAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
@@ -847,15 +929,10 @@
       } else {
         statusAlert.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
       }
-
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
-      setTimeout(() => {
-        statusAlert.classList.add('hidden');
-      }, 5000);
+      setTimeout(() => { statusAlert.classList.add('hidden'); }, 5000);
     }
 
-    // Reset All Inputs
     resetBtn.addEventListener('click', () => {
       document.getElementById('reportForm').reset();
       document.querySelectorAll('#reportForm input, #reportForm select').forEach(el => {
@@ -866,15 +943,10 @@
       statusAlert.classList.add('hidden');
     });
 
-    // Helper: Sanitize file name
     function sanitizeFilename(name) {
-      return name
-        .trim()
-        .replace(/[^a-zA-Z0-9_\-\s]/g, '')
-        .replace(/\s+/g, '_');
+      return name.trim().replace(/[^a-zA-Z0-9_\-\s]/g, '').replace(/\s+/g, '_');
     }
 
-    // Helper: Load Image Element for jsPDF dimensions
     function loadImageElement(dataUrl) {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -884,8 +956,6 @@
       });
     }
 
-    // PDF Generation
-    // DOM Elements for Preview Modal
     const previewModal = document.getElementById('previewModal');
     const closePreviewBtn = document.getElementById('closePreviewBtn');
     const cancelPreviewBtn = document.getElementById('cancelPreviewBtn');
@@ -894,17 +964,11 @@
     const previewPhotosScrollContainer = document.getElementById('previewPhotosScrollContainer');
     const previewPhotoCount = document.getElementById('previewPhotoCount');
 
-    // Close preview modal handlers
     [closePreviewBtn, cancelPreviewBtn].forEach(btn => {
-      if (btn) {
-        btn.addEventListener('click', () => {
-          previewModal.classList.add('hidden');
-        });
-      }
+      if (btn) btn.addEventListener('click', () => previewModal.classList.add('hidden'));
     });
 
-    // Image Zoom and Pan State & Functions
-    let imageZooms = {}; // index -> { scale, translateX, translateY }
+    let imageZooms = {};
 
     function getZoomState(idx) {
       if (!imageZooms[idx]) {
@@ -916,18 +980,13 @@
     window.zoomImage = function(idx, delta) {
       const state = getZoomState(idx);
       state.scale = Math.min(Math.max(1, state.scale + delta), 5);
-      if (state.scale === 1) {
-        state.translateX = 0;
-        state.translateY = 0;
-      }
+      if (state.scale === 1) { state.translateX = 0; state.translateY = 0; }
       applyImageTransform(idx);
     };
 
     window.resetImageZoom = function(idx) {
       const state = getZoomState(idx);
-      state.scale = 1;
-      state.translateX = 0;
-      state.translateY = 0;
+      state.scale = 1; state.translateX = 0; state.translateY = 0;
       applyImageTransform(idx);
     };
 
@@ -935,13 +994,8 @@
       e.preventDefault();
       const state = getZoomState(idx);
       const delta = e.deltaY < 0 ? 0.25 : -0.25;
-      const newScale = Math.min(Math.max(1, state.scale + delta), 5);
-      
-      state.scale = newScale;
-      if (state.scale === 1) {
-        state.translateX = 0;
-        state.translateY = 0;
-      }
+      state.scale = Math.min(Math.max(1, state.scale + delta), 5);
+      if (state.scale === 1) { state.translateX = 0; state.translateY = 0; }
       applyImageTransform(idx);
     };
 
@@ -949,12 +1003,8 @@
       const img = document.getElementById(`previewImg_${idx}`);
       const badge = document.getElementById(`zoomLevel_${idx}`);
       const state = getZoomState(idx);
-      if (img) {
-        img.style.transform = `scale(${state.scale}) translate(${state.translateX}px, ${state.translateY}px)`;
-      }
-      if (badge) {
-        badge.textContent = `${Math.round(state.scale * 100)}%`;
-      }
+      if (img) img.style.transform = `scale(${state.scale}) translate(${state.translateX}px, ${state.translateY}px)`;
+      if (badge) badge.textContent = `${Math.round(state.scale * 100)}%`;
     }
 
     let isDragging = false;
@@ -985,7 +1035,6 @@
       activeDragIdx = null;
     });
 
-    // Generate Button Click: Validate and Open Preview Modal
     generatePdfBtn.addEventListener('click', () => {
       const claimNumber = document.getElementById('claimNumber').value.trim();
       const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
@@ -998,7 +1047,6 @@
       const ownership = document.getElementById('ownership').value;
       const location = document.getElementById('location').value.trim();
 
-      // Check all required inputs
       const missingFields = [];
       if (!claimNumber) missingFields.push('Claim Number');
       if (!vehicleNumber) missingFields.push('Vehicle Number');
@@ -1016,14 +1064,12 @@
         return;
       }
 
-      // Check images required
       if (uploadedImages.length === 0) {
         showAlert('Kripya kam se kam ek vehicle photo jarur upload karein!', 'error');
         fileInput.click();
         return;
       }
 
-      // Populate Preview Modal Left Side (Details)
       const fields = [
         { label: 'Claim Number', value: claimNumber },
         { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
@@ -1044,7 +1090,6 @@
         </div>
       `).join('');
 
-      // Populate Preview Modal Right Side (Scrollable Photos)
       previewPhotoCount.textContent = uploadedImages.length;
       imageZooms = {};
       previewPhotosScrollContainer.innerHTML = uploadedImages.map((img, idx) => `
@@ -1068,11 +1113,9 @@
         </div>
       `).join('');
 
-      // Show Preview Modal
       previewModal.classList.remove('hidden');
     });
 
-    // Confirm Download Button Click: Generate PDF & Download
     confirmDownloadBtn.addEventListener('click', async () => {
       previewModal.classList.add('hidden');
 
@@ -1087,14 +1130,12 @@
       const ownership = document.getElementById('ownership').value;
       const location = document.getElementById('location').value.trim();
 
-      // Show Progress Modal
       loadingModal.classList.remove('hidden');
       progressBar.style.width = '20%';
       loadingStatusText.textContent = 'Report structure taiyar kiya ja raha hai...';
 
       try {
         const { jsPDF } = window.jspdf;
-        // Create A4 portrait PDF (210 x 297 mm)
         const doc = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
@@ -1106,9 +1147,8 @@
         const margin = 15;
         const contentWidth = pageWidth - (margin * 2);
 
-        // ---------------- PAGE 1: DETAILS ----------------
-        // Header background banner
-        doc.setFillColor(30, 41, 59); // Slate-800
+        // PAGE 1: DETAILS
+        doc.setFillColor(30, 41, 59);
         doc.rect(margin, 15, contentWidth, 22, 'F');
 
         doc.setTextColor(255, 255, 255);
@@ -1124,7 +1164,6 @@
         });
         doc.text(`Generated on: ${currentDate}`, margin + 8, 32);
 
-        // Form Fields Data Array
         const fields = [
           { label: 'Claim number', value: claimNumber },
           { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
@@ -1145,41 +1184,33 @@
         const paddingX = 4;
         const paddingY = 6.5;
 
-        // Table Borders Setup
-        doc.setDrawColor(203, 213, 225); // Slate 300
+        doc.setDrawColor(203, 213, 225);
         doc.setLineWidth(0.4);
 
         let currentY = startY;
 
         fields.forEach((field, index) => {
-          // Dynamic text wrap for values (especially Location or long Make & Model)
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9.5);
           const maxTextW = valueWidth - (paddingX * 2);
           const wrappedLines = doc.splitTextToSize(String(field.value), maxTextW);
           const lineCount = wrappedLines.length;
-          
-          // Calculate dynamic row height so text never overflows
           const dynamicHeight = Math.max(minRowHeight, (lineCount * 5) + 5);
 
-          // Zebra striping for readability
           if (index % 2 === 0) {
-            doc.setFillColor(248, 250, 252); // Slate-50
+            doc.setFillColor(248, 250, 252);
           } else {
             doc.setFillColor(255, 255, 255);
           }
           doc.rect(margin, currentY, contentWidth, dynamicHeight, 'FD');
 
-          // Label Column (Left)
           doc.setTextColor(15, 23, 42);
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(10);
           doc.text(field.label, margin + paddingX, currentY + paddingY);
 
-          // Vertical dividing line
           doc.line(margin + labelWidth, currentY, margin + labelWidth, currentY + dynamicHeight);
 
-          // Value Column (Right) with line wrapping
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9.5);
           doc.setTextColor(51, 65, 85);
@@ -1188,7 +1219,6 @@
           currentY += dynamicHeight;
         });
 
-        // Summary Note / Footer at bottom of Page 1
         const bottomBoxY = currentY + 8;
         doc.setFillColor(241, 245, 249);
         doc.roundedRect(margin, bottomBoxY, contentWidth, 18, 2, 2, 'F');
@@ -1206,21 +1236,18 @@
         const imgText = `Total ${uploadedImages.length} vehicle photograph(s) are attached in the following pages of this document.`;
         doc.text(imgText, margin + 4, bottomBoxY + 13);
 
-        // Page number footer for Page 1
         doc.setFontSize(8);
         doc.setTextColor(148, 163, 184);
         doc.text(`Page 1 of ${uploadedImages.length + 1}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
 
-        // ---------------- SUBSEQUENT PAGES: ALL IMAGES ----------------
+        // SUBSEQUENT PAGES: PHOTOS
         progressBar.style.width = '40%';
         loadingStatusText.textContent = `0 of ${uploadedImages.length} images processed...`;
 
-        // Har uploaded image ke liye ek new page create hoga taaki full resolution aur koi bhi image miss na ho
         for (let i = 0; i < uploadedImages.length; i++) {
           const imgItem = uploadedImages[i];
           doc.addPage();
 
-          // Header on photo pages
           doc.setFillColor(248, 250, 252);
           doc.rect(0, 0, pageWidth, 18, 'F');
           doc.setDrawColor(226, 232, 240);
@@ -1236,28 +1263,23 @@
           doc.setTextColor(100, 116, 139);
           doc.text(`${vehicleNumber.toUpperCase()} | ${makeModel}`, pageWidth - margin, 12, { align: 'right' });
 
-          // Load image element to calculate exact aspect ratio fit and prevent margin issues
           const imgElement = await loadImageElement(imgItem.dataUrl);
           const origW = imgElement.naturalWidth || imgElement.width || 800;
           const origH = imgElement.naturalHeight || imgElement.height || 600;
 
-          // Max available area for photo with perfect padding and ratio fitting
           const maxImgW = contentWidth;
-          const maxImgH = pageHeight - 42 - 22; // header and caption buffer
+          const maxImgH = pageHeight - 42 - 22;
           const ratio = Math.min(maxImgW / origW, maxImgH / origH);
 
           const finalW = origW * ratio;
           const finalH = origH * ratio;
 
-          // Center the image on the page precisely without margin problems
           const posX = margin + (contentWidth - finalW) / 2;
           const posY = 24 + Math.max(0, (maxImgH - finalH) / 2);
 
-          // Border frame around photo
           doc.setFillColor(241, 245, 249);
           doc.roundedRect(posX - 1, posY - 1, finalW + 2, finalH + 2, 1, 1, 'F');
           
-          // Add Image
           let imgFormat = 'JPEG';
           if (imgItem.dataUrl.startsWith('data:image/png')) {
             imgFormat = 'PNG';
@@ -1267,25 +1289,21 @@
 
           doc.addImage(imgItem.dataUrl, imgFormat, posX, posY, finalW, finalH, undefined, 'FAST');
 
-          // Photo details caption under image
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(8.5);
           doc.setTextColor(100, 116, 139);
           const caption = `Photograph #${i + 1} - ${imgItem.name || 'Vehicle Photo'}`;
           doc.text(caption, pageWidth / 2, posY + finalH + 6, { align: 'center' });
 
-          // Page footer
           doc.setFontSize(8);
           doc.setTextColor(148, 163, 184);
           doc.text(`Page ${i + 2} of ${uploadedImages.length + 1}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
 
-          // Update Progress
           const progressPercent = 40 + Math.floor(((i + 1) / uploadedImages.length) * 55);
           progressBar.style.width = `${progressPercent}%`;
           loadingStatusText.textContent = `${i + 1} of ${uploadedImages.length} images processed...`;
         }
 
-        // Sanitize PDF Name: <Vehicle_Number>_<Make_and_Model>.pdf
         const cleanVeh = sanitizeFilename(vehicleNumber);
         const cleanMake = sanitizeFilename(makeModel);
         const fileName = `${cleanVeh}_${cleanMake}.pdf`;
@@ -1293,7 +1311,6 @@
         progressBar.style.width = '100%';
         loadingStatusText.textContent = 'PDF download ho rahi hai...';
 
-        // Save & Download (Direct to selected folder if available, else browser download)
         let savedDirectly = false;
         if (savedDirectoryHandle) {
           try {
@@ -1318,11 +1335,26 @@
           doc.save(fileName);
         }
 
-        // Hide Modal
+        // --- SAVE RECORD TO SUPABASE CLOUD ---
+        const cloudRecord = {
+          claim_number: claimNumber,
+          vehicle_number: vehicleNumber.toUpperCase(),
+          insurance_company: insuranceCompany,
+          make_model: makeModel,
+          mfg_year: mfgDate,
+          reg_year: regYear,
+          quote_type: quoteType,
+          fuel_type: fuelType,
+          ownership: ownership,
+          location: location,
+          photos_count: uploadedImages.length
+        };
+        saveRecordToDatabase(cloudRecord);
+
         setTimeout(() => {
           loadingModal.classList.add('hidden');
           const folderInfo = savedDirectly && savedDirectoryHandle ? ` (Folder: ${savedDirectoryHandle.name})` : '';
-          showAlert(`PDF "${fileName}" safaltapoorvak download ho gayi hai${folderInfo}!`, 'success');
+          showAlert(`PDF "${fileName}" download ho gayi aur Cloud database me save ho gaya!`, 'success');
           showSuccessPopup(fileName);
         }, 600);
 
@@ -1333,7 +1365,6 @@
       }
     });
 
-    // Success Modal Logic
     const successModal = document.getElementById('successModal');
     const successModalText = document.getElementById('successModalText');
     const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
@@ -1345,12 +1376,8 @@
     }
 
     function showSuccessPopup(fileName) {
-      if (successModalText) {
-        successModalText.textContent = fileName;
-      }
-      if (successModal) {
-        successModal.classList.remove('hidden');
-      }
+      if (successModalText) successModalText.textContent = fileName;
+      if (successModal) successModal.classList.remove('hidden');
     }
   </script>
 </body>
