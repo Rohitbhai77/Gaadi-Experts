@@ -123,8 +123,8 @@
 
   <!-- Header -->
   <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-700 transition-colors duration-300">
-    <div class="max-w-6xl mx-auto px-4 py-3.5 sm:px-6 flex items-center justify-between">
-      <div class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-3 py-3 sm:px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
         <div>
           <div class="flex items-center gap-2.5">
             <i class="ph-fill ph-car-profile text-indigo-400 text-2xl"></i>
@@ -133,43 +133,52 @@
           <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-end">
         <!-- Folder Selector Button -->
-        <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer" title="Select Download Folder for all PDFs">
+        <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Select Download Folder for all PDFs">
           <i class="ph ph-folder-open text-base text-indigo-200"></i>
-          <span id="folderNameDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">PDF'S</span>
+          <span id="folderNameDisplay" class="truncate max-w-[90px] sm:max-w-[120px]">PDF'S</span>
         </button>
 
         <!-- Export Excel Button -->
-        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-emerald-500 shadow-sm cursor-pointer" title="Export all submitted records from cloud to Excel">
+        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-emerald-500 shadow-sm cursor-pointer shrink-0" title="Export all submitted records from cloud to Excel">
           <i class="ph-bold ph-file-xls text-base"></i>
-          <span>Export Excel</span>
+          <span class="hidden md:inline">Export Excel</span>
+          <span class="md:hidden">Excel</span>
           <span id="excelBadgeCount" class="bg-emerald-900/60 text-[11px] px-1.5 py-0.5 rounded-full font-bold ml-0.5">...</span>
         </button>
 
         <!-- ZIP Button -->
-        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer" title="ZIP Maker">
+        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer shrink-0" title="ZIP Maker">
           <i class="ph ph-file-zip text-base"></i>
           <span>ZIP</span>
         </a>
 
         <!-- Theme Selector -->
-        <div class="inline-flex items-center gap-1.5 bg-indigo-800 text-white px-3 py-2 rounded-xl border border-indigo-700 shadow-sm">
-          <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden md:inline">Theme:</label>
+        <div class="inline-flex items-center gap-1 bg-indigo-800 text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-indigo-700 shadow-sm shrink-0">
+          <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden lg:inline">Theme:</label>
           <select id="themeSelector" onchange="switchTheme(this.value)" class="bg-transparent text-white text-xs sm:text-sm outline-none cursor-pointer transition">
-            <option value="indigo">Indigo (Default)</option>
-            <option value="emerald">Emerald Green</option>
-            <option value="blue">Royal Blue</option>
-            <option value="rose">Crimson Rose</option>
-            <option value="amber">Amber Gold</option>
-            <option value="slate">Dark Slate</option>
+            <option value="indigo">Indigo</option>
+            <option value="emerald">Emerald</option>
+            <option value="blue">Blue</option>
+            <option value="rose">Rose</option>
+            <option value="amber">Amber</option>
+            <option value="slate">Slate</option>
           </select>
         </div>
 
         <!-- Reset Form Button -->
-        <button id="resetBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-rose-600 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer">
+        <button id="resetBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-rose-600 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Reset Form">
           <i class="ph ph-arrow-counter-clockwise text-base"></i>
-          <span>Reset Form</span>
+          <span class="hidden md:inline">Reset Form</span>
+          <span class="md:hidden">Reset</span>
+        </button>
+
+        <!-- Restore Data Button -->
+        <button id="restoreBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-emerald-600 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Restore Previously Filled Data">
+          <i class="ph ph-clock-counter-clockwise text-base"></i>
+          <span class="hidden md:inline">Restore Data</span>
+          <span class="md:hidden">Restore</span>
         </button>
       </div>
     </div>
@@ -1128,6 +1137,7 @@
     });
 
     confirmDownloadBtn.addEventListener('click', async () => {
+      backupCurrentForm();
       previewModal.classList.add('hidden');
 
       const claimNumber = document.getElementById('claimNumber').value.trim();
@@ -1380,9 +1390,51 @@
     const successModalText = document.getElementById('successModalText');
     const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
 
+    let lastSubmittedData = null;
+
+    function backupCurrentForm() {
+      const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
+      const formData = {};
+      formInputs.forEach(input => {
+        formData[input.id] = input.value;
+      });
+      lastSubmittedData = {
+        formData: formData,
+        images: [...uploadedImages]
+      };
+    }
+
     if (closeSuccessModalBtn) {
       closeSuccessModalBtn.addEventListener('click', () => {
         successModal.classList.add('hidden');
+        document.getElementById('reportForm').reset();
+        document.querySelectorAll('#reportForm input, #reportForm select').forEach(el => {
+          el.classList.remove('filled-glow');
+        });
+        uploadedImages = [];
+        renderThumbnails();
+        statusAlert.classList.add('hidden');
+        showAlert('Form naye entry ke liye khali kar diya gaya hai. Purana data wapis lane ke liye "Restore Data" button click karein.', 'success');
+      });
+    }
+
+    const restoreBtn = document.getElementById('restoreBtn');
+    if (restoreBtn) {
+      restoreBtn.addEventListener('click', () => {
+        if (!lastSubmittedData || !lastSubmittedData.formData) {
+          showAlert('Koi bhi previous filled data available nahi hai!', 'error');
+          return;
+        }
+        Object.keys(lastSubmittedData.formData).forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.value = lastSubmittedData.formData[id];
+            updateFieldGlow(el);
+          }
+        });
+        uploadedImages = [...lastSubmittedData.images];
+        renderThumbnails();
+        showAlert('Previous filled data successfully wapis aa gaya hai!', 'success');
       });
     }
 
