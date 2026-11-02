@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vehicle Claim & Inspection PDF Report</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- jsPDF Library -->
@@ -86,20 +86,26 @@
 
     .moving-dash-border {
       position: relative;
-      border-radius: 1rem;
-      background: #ffffff;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      border-radius: 1.25rem;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .moving-dash-border:hover {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 25px var(--theme-glow);
     }
     .moving-dash-border::before {
       content: '';
       position: absolute;
       inset: -3px;
-      border-radius: 1.15rem;
-      border: 3px dashed transparent;
-      background: linear-gradient(90deg, #ff4d4d, #ffdf00, #00ffcc, #3b82f6, #9333ea, #ff4d4d);
-      background-size: 400% 400%;
+      border-radius: 1.4rem;
+      border: 2px dashed transparent;
+      background: linear-gradient(90deg, var(--theme-color), var(--theme-glow), var(--theme-color));
+      background-size: 300% 300%;
       z-index: -1;
-      animation: borderDashFlow 4s linear infinite;
+      animation: borderDashFlow 12s linear infinite;
+      opacity: 0.45;
     }
 
     .hover-dash {
@@ -189,15 +195,18 @@
     <form id="reportForm" class="space-y-8" onsubmit="event.preventDefault();">
       
       <!-- Top Grid: Form Details -->
-      <div class="moving-dash-border p-6 sm:p-8 transition-all">
-        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <i class="ph-fill ph-car-profile text-indigo-600 text-xl"></i>
-              Vehicle & Claim Information
-            </h2>
+      <div class="moving-dash-border p-6 sm:p-10 transition-all">
+        <div class="flex items-center justify-between pb-5 mb-8 border-b border-slate-200/80 bg-gradient-to-r from-slate-50/80 via-indigo-50/30 to-transparent -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 p-6 sm:px-10 rounded-t-[1.25rem]">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <i class="ph-fill ph-car-profile text-2xl"></i>
+            </div>
+            <div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Vehicle & Claim Information</h2>
+              <p class="text-xs sm:text-sm text-slate-500 font-medium">Enter accurate vehicle details and claim reference data</p>
+            </div>
           </div>
-          <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">Page 1 Details</span>
+          <span class="text-xs font-bold px-3 py-1.5 bg-indigo-100/80 text-indigo-800 rounded-xl border border-indigo-200 shadow-sm">Page 1 Details</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -245,12 +254,30 @@
             </select>
           </div>
 
-          <!-- Make & Model -->
+          <!-- Make -->
           <div>
-            <label for="makeModel" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Make & Model <span class="text-rose-500 font-bold">*</span>
+            <label for="vehicleMake" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              Make <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="makeModel" required placeholder="e.g. Hyundai Creta SX" 
+            <input type="text" id="vehicleMake" required placeholder="e.g. Hyundai" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+          </div>
+
+          <!-- Model -->
+          <div>
+            <label for="vehicleModel" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              Model <span class="text-rose-500 font-bold">*</span>
+            </label>
+            <input type="text" id="vehicleModel" required placeholder="e.g. Creta" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+          </div>
+
+          <!-- Variant -->
+          <div>
+            <label for="vehicleVariant" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              Variant <span class="text-rose-500 font-bold">*</span>
+            </label>
+            <input type="text" id="vehicleVariant" required placeholder="e.g. SX" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
           </div>
 
@@ -552,8 +579,8 @@
   <script>
     // --- SUPABASE CLOUD DATABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://qtftkrssonozonsxhiqn.supabase.co';
-    // Yahan apni copied Publishable Key paste karein:
     const SUPABASE_ANON_KEY = 'sb_publishable_bUvA4RRkBVqs8hq5o8_XNg_DOSfV7fY';
+    const TABLE_NAME = 'vehicle_inspections_v2'; // Nayi table name set ki gayi hai
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -561,7 +588,7 @@
     async function updateExcelBadge() {
       try {
         const { count, error } = await supabaseClient
-          .from('vehicle_inspections')
+          .from(TABLE_NAME)
           .select('*', { count: 'exact', head: true });
         
         if (!error && count !== null) {
@@ -577,7 +604,7 @@
     async function saveRecordToDatabase(recordData) {
       try {
         const { error } = await supabaseClient
-          .from('vehicle_inspections')
+          .from(TABLE_NAME)
           .insert([recordData]);
 
         if (error) {
@@ -596,7 +623,7 @@
       
       try {
         const { data, error } = await supabaseClient
-          .from('vehicle_inspections')
+          .from(TABLE_NAME)
           .select('*')
           .order('id', { ascending: false });
 
@@ -607,18 +634,20 @@
 
         const formattedData = data.map((item, index) => ({
           "S.No": index + 1,
-          "Date & Time": new Date(item.created_at).toLocaleString('en-IN'),
-          "Claim Number": item.claim_number,
-          "Vehicle Number": item.vehicle_number,
-          "Insurance Company": item.insurance_company,
-          "Make & Model": item.make_model,
-          "Manufacturing Year": item.mfg_year,
-          "Registration Year": item.reg_year,
-          "Quote Type": item.quote_type,
-          "Fuel Type": item.fuel_type,
-          "Ownership": item.ownership,
-          "Location": item.location,
-          "Photos Count": item.photos_count
+          "Date & Time": item.created_at ? new Date(item.created_at).toLocaleString('en-IN') : '',
+          "Claim Number": item.claim_number || '',
+          "Vehicle Number": item.vehicle_number || '',
+          "Insurance Company": item.insurance_company || '',
+          "Make": item.make || '',
+          "Model": item.model || '',
+          "Variant": item.variant || '',
+          "Manufacturing Year": item.mfg_year || '',
+          "Registration Year": item.reg_year || '',
+          "Quote Type": item.quote_type || '',
+          "Fuel Type": item.fuel_type || '',
+          "Ownership": item.ownership || '',
+          "Location": item.location || '',
+          "Photos Count": item.photos_count || (item.photos ? item.photos.length : 0)
         }));
 
         const ws = XLSX.utils.json_to_sheet(formattedData);
@@ -629,7 +658,9 @@
           { wch: 18 },
           { wch: 16 },
           { wch: 22 },
-          { wch: 22 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 14 },
           { wch: 18 },
           { wch: 18 },
           { wch: 14 },
@@ -789,11 +820,6 @@
           }
         }
       });
-    }
-
-    const zipMakerBtn = document.getElementById('zipMakerBtn');
-    if (zipMakerBtn) {
-      // Direct navigation via href attribute
     }
 
     let uploadedImages = [];
@@ -1059,7 +1085,9 @@
       const claimNumber = document.getElementById('claimNumber').value.trim();
       const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
       const insuranceCompany = document.getElementById('insuranceCompany').value;
-      const makeModel = document.getElementById('makeModel').value.trim();
+      const vehicleMake = document.getElementById('vehicleMake').value.trim();
+      const vehicleModel = document.getElementById('vehicleModel').value.trim();
+      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
       const quoteType = document.getElementById('quoteType').value;
       const mfgDate = document.getElementById('mfgDate').value.trim();
       const regYear = document.getElementById('regYear').value.trim();
@@ -1071,7 +1099,9 @@
       if (!claimNumber) missingFields.push('Claim Number');
       if (!vehicleNumber) missingFields.push('Vehicle Number');
       if (!insuranceCompany) missingFields.push('Insurance Company');
-      if (!makeModel) missingFields.push('Make & Model');
+      if (!vehicleMake) missingFields.push('Make');
+      if (!vehicleModel) missingFields.push('Model');
+      if (!vehicleVariant) missingFields.push('Variant');
       if (!quoteType) missingFields.push('Quote Type');
       if (!mfgDate) missingFields.push('Manufacturing Year');
       if (!regYear) missingFields.push('Registration Year');
@@ -1094,7 +1124,9 @@
         { label: 'Claim Number', value: claimNumber },
         { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
         { label: 'Insurance Company', value: insuranceCompany },
-        { label: 'Make & Model', value: makeModel },
+        { label: 'Make', value: vehicleMake },
+        { label: 'Model', value: vehicleModel },
+        { label: 'Variant', value: vehicleVariant },
         { label: 'Manufacturing Year', value: mfgDate },
         { label: 'Registration Year', value: regYear },
         { label: 'Quote Type', value: quoteType },
@@ -1143,7 +1175,10 @@
       const claimNumber = document.getElementById('claimNumber').value.trim();
       const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
       const insuranceCompany = document.getElementById('insuranceCompany').value;
-      const makeModel = document.getElementById('makeModel').value.trim();
+      const vehicleMake = document.getElementById('vehicleMake').value.trim();
+      const vehicleModel = document.getElementById('vehicleModel').value.trim();
+      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
+      const fullMakeModel = `${vehicleMake} ${vehicleModel} ${vehicleVariant}`.trim();
       const quoteType = document.getElementById('quoteType').value;
       const mfgDate = document.getElementById('mfgDate').value.trim();
       const regYear = document.getElementById('regYear').value.trim();
@@ -1188,7 +1223,9 @@
         const fields = [
           { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
           { label: 'Insurance Company', value: insuranceCompany },
-          { label: 'Make & Model', value: makeModel },
+          { label: 'Make', value: vehicleMake },
+          { label: 'Model', value: vehicleModel },
+          { label: 'Variant', value: vehicleVariant },
           { label: 'Manufacturing Date', value: mfgDate },
           { label: 'Registration Year', value: regYear },
           { label: 'Quote Type', value: quoteType },
@@ -1281,7 +1318,7 @@
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9);
           doc.setTextColor(100, 116, 139);
-          doc.text(`${vehicleNumber.toUpperCase()} | ${makeModel}`, pageWidth - margin, 11, { align: 'right' });
+          doc.text(`${vehicleNumber.toUpperCase()} | ${fullMakeModel}`, pageWidth - margin, 11, { align: 'right' });
 
           const imgElement = await loadImageElement(imgItem.dataUrl);
           const origW = imgElement.naturalWidth || imgElement.width || 800;
@@ -1325,7 +1362,7 @@
         }
 
         const cleanVeh = sanitizeFilename(vehicleNumber);
-        const cleanMake = sanitizeFilename(makeModel);
+        const cleanMake = sanitizeFilename(fullMakeModel);
         const fileName = `${cleanVeh}_${cleanMake}.pdf`;
 
         progressBar.style.width = '100%';
@@ -1355,25 +1392,25 @@
           doc.save(fileName);
         }
 
-        // --- SAVE RECORD TO SUPABASE CLOUD ---
+        // --- SAVE RECORD TO SUPABASE CLOUD (vehicle_inspections_v2) ---
         const cloudRecord = {
           claim_number: claimNumber,
           vehicle_number: vehicleNumber.toUpperCase(),
           insurance_company: insuranceCompany,
-          make_model: makeModel,
+          make: vehicleMake,
+          model: vehicleModel,
+          variant: vehicleVariant,
           mfg_year: mfgDate,
           reg_year: regYear,
           quote_type: quoteType,
           fuel_type: fuelType,
           ownership: ownership,
-          location: location,
-          photos_count: uploadedImages.length
+          location: location
         };
         saveRecordToDatabase(cloudRecord);
 
         setTimeout(() => {
           loadingModal.classList.add('hidden');
-          const folderInfo = savedDirectly && savedDirectoryHandle ? ` (Folder: ${savedDirectoryHandle.name})` : '';
           showAlert(`PDF "${fileName}" download ho gayi aur Cloud database me save ho gaya!`, 'success');
           showSuccessPopup(fileName);
         }, 600);
