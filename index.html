@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vehicle Claim & Inspection PDF Report</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/ico" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- jsPDF Library -->
@@ -1365,6 +1365,16 @@
           const origW = imgElement.naturalWidth || imgElement.width || 800;
           const origH = imgElement.naturalHeight || imgElement.height || 600;
 
+          // Draw onto a canvas with solid white background to eliminate black backgrounds, blur and compression artifacts
+          const canvas = document.createElement('canvas');
+          canvas.width = origW;
+          canvas.height = origH;
+          const ctx = canvas.getContext('2d', { alpha: false });
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, origW, origH);
+          ctx.drawImage(imgElement, 0, 0, origW, origH);
+          const cleanJpegDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
           const maxImgW = contentWidth;
           const maxImgH = 265;
           const ratio = Math.min(maxImgW / origW, maxImgH / origH);
@@ -1377,15 +1387,8 @@
 
           doc.setFillColor(241, 245, 249);
           doc.roundedRect(posX - 1, posY - 1, finalW + 2, finalH + 2, 1, 1, 'F');
-          
-          let imgFormat = 'JPEG';
-          if (imgItem.dataUrl.startsWith('data:image/png')) {
-            imgFormat = 'PNG';
-          } else if (imgItem.dataUrl.startsWith('data:image/webp')) {
-            imgFormat = 'WEBP';
-          }
 
-          doc.addImage(imgItem.dataUrl, imgFormat, posX, posY, finalW, finalH, undefined, 'FAST');
+          doc.addImage(cleanJpegDataUrl, 'JPEG', posX, posY, finalW, finalH);
 
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(8.5);
