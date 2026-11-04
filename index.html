@@ -88,13 +88,17 @@
 
     .gaadi-expert-effect {
       font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #94a3b8 70%, #f1f5f9 100%);
-      background-size: 200% auto;
-      color: transparent;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: silverPlatinumShine 6s linear infinite;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(244, 63, 94, 0.3);
+      font-weight: 900;
+      color: #ffffff;
+      -webkit-text-fill-color: #ffffff;
+      text-shadow: 
+        0 1px 0 #fca5a5,
+        0 2px 0 #ef4444,
+        0 3px 0 #dc2626,
+        0 4px 0 #b91c1c,
+        0 5px 0 #991b1b,
+        0 6px 10px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(239, 68, 68, 0.7);
       display: inline-block;
       letter-spacing: 0.05em;
     }
@@ -105,32 +109,21 @@
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 25%, #ffffff 50%, #94a3b8 75%, #e2e8f0 100%);
-      background-size: 200% auto;
-      color: transparent;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: silverPlatinumShine 6s linear infinite, subtleRedGlowPulse 4s ease-in-out infinite;
-      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7),
-                   0 2px 4px rgba(0, 0, 0, 0.9),
-                   0 6px 20px rgba(244, 63, 94, 0.4),
-                   0 12px 35px rgba(159, 18, 57, 0.6);
+      color: #ffffff;
+      -webkit-text-fill-color: #ffffff;
+      text-shadow: 
+        0 1px 0 #fca5a5,
+        0 2px 0 #ef4444,
+        0 3px 0 #dc2626,
+        0 4px 0 #b91c1c,
+        0 5px 0 #991b1b,
+        0 6px 0 #7f1d1d,
+        0 7px 0 #450a0a,
+        0 8px 15px rgba(0, 0, 0, 0.85),
+        0 0 30px rgba(239, 68, 68, 0.8),
+        0 0 60px rgba(220, 38, 38, 0.4);
       position: relative;
       display: inline-block;
-      overflow: hidden;
-    }
-
-    .luxury-automotive-title::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 50%;
-      height: 200%;
-      background: linear-gradient(to right, transparent, rgba(253, 164, 175, 0.5), transparent);
-      transform: rotate(25deg);
-      animation: lightSweep 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      pointer-events: none;
     }
 
     @keyframes borderDashFlow {
@@ -286,7 +279,7 @@
 
   <!-- Header -->
   <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-700 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-3 py-3 sm:px-6 flex items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-3 py-3 sm:px-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
       <div class="flex items-center gap-3 shrink-0">
         <div>
           <div class="flex items-center gap-2.5">
@@ -296,7 +289,7 @@
           <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-end">
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-start xl:justify-end">
         <!-- Folder Selector Button -->
         <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Select Download Folder for all PDFs">
           <i class="ph ph-folder-open text-base text-indigo-200"></i>
@@ -342,12 +335,6 @@
           <i class="ph ph-clock-counter-clockwise text-base"></i>
           <span class="hidden md:inline">Restore Data</span>
           <span class="md:hidden">Restore</span>
-        </button>
-
-        <!-- Test Audio Button -->
-        <button id="testAudioBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Test Chhuti Audio">
-          <i class="ph ph-speaker-high text-base"></i>
-          <span class="hidden md:inline">Test Audio</span>
         </button>
       </div>
     </div>
@@ -917,14 +904,34 @@
 
     function loadSuggestions() {
       suggestionFields.forEach(fieldId => {
+        const input = document.getElementById(fieldId);
         const datalist = document.getElementById(fieldId + 'List');
-        if (!datalist) return;
-        try {
-          const saved = JSON.parse(localStorage.getItem('gaadi_suggestions_' + fieldId) || '[]');
-          datalist.innerHTML = saved.map(val => `<option value="${val}">`).join('');
-        } catch (e) {
-          console.error('Error loading suggestions for ' + fieldId, e);
-        }
+        if (!input || !datalist) return;
+
+        // Ensure datalist is empty initially so dropdown doesn't show on focus/click before typing
+        datalist.innerHTML = '';
+
+        input.addEventListener('input', () => {
+          const query = input.value.trim().toLowerCase();
+          if (!query) {
+            datalist.innerHTML = '';
+            return;
+          }
+          try {
+            const saved = JSON.parse(localStorage.getItem('gaadi_suggestions_' + fieldId) || '[]');
+            const filtered = saved.filter(val => val.toLowerCase().includes(query));
+            datalist.innerHTML = filtered.map(val => `<option value="${val}">`).join('');
+          } catch (e) {
+            console.error('Error filtering suggestions for ' + fieldId, e);
+          }
+        });
+
+        input.addEventListener('focus', () => {
+          const query = input.value.trim().toLowerCase();
+          if (!query) {
+            datalist.innerHTML = '';
+          }
+        });
       });
     }
 
@@ -938,7 +945,6 @@
           saved.unshift(val);
           if (saved.length > 50) saved = saved.slice(0, 50);
           localStorage.setItem(key, JSON.stringify(saved));
-          loadSuggestions();
         }
       } catch (e) {
         console.error('Error saving suggestion for ' + fieldId, e);
@@ -1100,6 +1106,65 @@
         regEl.addEventListener('change', validateDates);
         mfgEl.addEventListener('input', validateDates);
         regEl.addEventListener('input', validateDates);
+      }
+    });
+
+    // --- GRID ARROW KEY FORM NAVIGATION ---
+    document.addEventListener('keydown', (e) => {
+      const activeEl = document.activeElement;
+      if (!activeEl || !activeEl.closest('#reportForm')) return;
+
+      const focusableElements = Array.from(document.querySelectorAll('#reportForm input:not([type="hidden"]):not([type="file"]), #reportForm select'))
+        .filter(el => !el.disabled && el.offsetParent !== null);
+      
+      const index = focusableElements.indexOf(activeEl);
+      if (index === -1) return;
+
+      let cols = 3;
+      if (window.innerWidth < 640) cols = 1;
+      else if (window.innerWidth < 1024) cols = 2;
+
+      let nextIndex = index;
+      let handled = false;
+
+      if (e.key === 'ArrowRight') {
+        if (activeEl.tagName === 'SELECT' || (activeEl.tagName === 'INPUT' && activeEl.selectionStart === activeEl.value.length)) {
+          if (index < focusableElements.length - 1) {
+            nextIndex = index + 1;
+            handled = true;
+          }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (activeEl.tagName === 'SELECT' || (activeEl.tagName === 'INPUT' && activeEl.selectionStart === 0)) {
+          if (index > 0) {
+            nextIndex = index - 1;
+            handled = true;
+          }
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (index + cols < focusableElements.length) {
+          nextIndex = index + cols;
+          handled = true;
+        } else if (index < focusableElements.length - 1 && activeEl.tagName === 'SELECT') {
+          nextIndex = index + 1;
+          handled = true;
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (index - cols >= 0) {
+          nextIndex = index - cols;
+          handled = true;
+        } else if (index > 0 && activeEl.tagName === 'SELECT') {
+          nextIndex = index - 1;
+          handled = true;
+        }
+      }
+
+      if (handled) {
+        e.preventDefault();
+        focusableElements[nextIndex].focus();
+        if (focusableElements[nextIndex].tagName === 'INPUT' && focusableElements[nextIndex].type === 'text') {
+          focusableElements[nextIndex].select();
+        }
       }
     });
 
@@ -1787,6 +1852,15 @@
 
     let lastSubmittedData = null;
 
+    function showSuccessPopup(fileName) {
+      if (successModalText) {
+        successModalText.textContent = fileName;
+      }
+      if (successModal) {
+        successModal.classList.remove('hidden');
+      }
+    }
+
     function backupCurrentForm() {
       const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
       const formData = {};
@@ -1809,9 +1883,22 @@
         uploadedImages = [];
         renderThumbnails();
         statusAlert.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         showAlert('Form naye entry ke liye khali kar diya gaya hai. Purana data wapis lane ke liye "Restore Data" button click karein.', 'success');
       });
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const successModal = document.getElementById('successModal');
+        if (successModal && !successModal.classList.contains('hidden')) {
+          e.preventDefault();
+          if (closeSuccessModalBtn) {
+            closeSuccessModalBtn.click();
+          }
+        }
+      }
+    });
 
     const restoreBtn = document.getElementById('restoreBtn');
     if (restoreBtn) {
@@ -1879,14 +1966,6 @@
       }).catch(err => {
         console.warn('Audio play was blocked by browser:', err);
         showAlert('🔊 Chhuti ka time ho gaya! (Browser ne audio block kiya, screen par click karein)', 'error');
-      });
-    }
-
-    const testAudioBtn = document.getElementById('testAudioBtn');
-    if (testAudioBtn) {
-      testAudioBtn.addEventListener('click', () => {
-        playAudioSequence(2);
-        showAlert('🔊 Chhuti audio test played!', 'success');
       });
     }
 
