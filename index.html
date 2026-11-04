@@ -258,19 +258,15 @@
 
   <!-- Full Screen Landing Intro Animation -->
   <div id="welcomeModal" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#030712] text-white px-4 transition-all duration-700 overflow-hidden">
-    <!-- Subtle Red Ambient Lighting -->
     <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-rose-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse"></div>
     <div class="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
     
     <div class="relative z-10 max-w-4xl w-full mx-auto text-center flex flex-col items-center intro-container">
-      
-      <!-- Top Corporate Badge -->
       <div class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-slate-950/90 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-semibold tracking-widest uppercase mb-8 shadow-[0_0_30px_rgba(244,63,94,0.25)] backdrop-blur-md">
         <i class="ph-fill ph-sparkle text-rose-400 animate-spin"></i>
         <span>Automotive Technology & Corporate Intro</span>
       </div>
 
-      <!-- Favicon & Brand Row -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mb-5">
         <div class="p-3 rounded-2xl bg-slate-900/90 border border-rose-500/40 shadow-[0_0_30px_rgba(244,63,94,0.4)] backdrop-blur-md flex items-center justify-center transition-transform hover:scale-105 duration-300">
           <img src="favicon.png" alt="Gaadi Experts Favicon" class="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_15px_rgba(244,63,94,0.8)]" onerror="this.style.display='none';">
@@ -278,7 +274,6 @@
         <h1 class="luxury-automotive-title">GAADI EXPERTS</h1>
       </div>
 
-      <!-- Subtitle / Description -->
       <p class="text-rose-200/90 text-sm sm:text-base font-medium tracking-wide mb-6">
         Vehicle Claim PDF Generator & Professional Inspection Report
       </p>
@@ -286,7 +281,6 @@
       <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed tracking-wide">
         Welcome to Gaadi Experts Page. Loading advanced automotive diagnostic suite...
       </p>
-
     </div>
   </div>
 
@@ -399,7 +393,7 @@
             <datalist id="vehicleNumberList"></datalist>
           </div>
 
-          <!-- Insurance Company (Dropdown) -->
+          <!-- Insurance Company -->
           <div>
             <label for="insuranceCompany" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Insurance Company <span class="text-rose-500 font-bold">*</span>
@@ -455,7 +449,7 @@
             <datalist id="vehicleVariantList"></datalist>
           </div>
 
-          <!-- Manufacturing Year (Dropdown 2000 to 2030) -->
+          <!-- Manufacturing Year -->
           <div>
             <label for="mfgDate" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Manufacturing Year <span class="text-rose-500 font-bold">*</span>
@@ -496,7 +490,7 @@
             </select>
           </div>
 
-          <!-- Registration Year (Dropdown 2000 to 2030) -->
+          <!-- Registration Year -->
           <div>
             <label for="regYear" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Registration Year <span class="text-rose-500 font-bold">*</span>
@@ -537,7 +531,7 @@
             </select>
           </div>
 
-          <!-- Quote Type (Dropdown) -->
+          <!-- Quote Type -->
           <div>
             <label for="quoteType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Quote Type <span class="text-rose-500 font-bold">*</span>
@@ -550,7 +544,7 @@
             </select>
           </div>
 
-          <!-- Fuel Type (Dropdown) -->
+          <!-- Fuel Type -->
           <div>
             <label for="fuelType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Fuel Type <span class="text-rose-500 font-bold">*</span>
@@ -577,7 +571,7 @@
             </select>
           </div>
 
-          <!-- Ownership (1 to 9) -->
+          <!-- Ownership -->
           <div>
             <label for="ownership" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Ownership <span class="text-rose-500 font-bold">*</span>
@@ -644,9 +638,7 @@
                   <i class="ph ph-trash"></i> Remove All
                 </button>
               </div>
-              <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                <!-- Dynamic thumbnails -->
-              </div>
+              <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
             </div>
           </div>
         </div>
@@ -659,10 +651,8 @@
             PDF Name: <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono font-semibold">[Vehicle_Number]_[Make_and_Model].pdf</code>
           </div>
           
-          <!-- Notification Message Box -->
           <div id="statusAlert" class="hidden w-full sm:w-auto p-2.5 rounded-xl text-xs sm:text-sm font-medium"></div>
 
-          <!-- Download Button -->
           <button id="generatePdfBtn" type="button" 
             class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 flex items-center justify-center gap-2.5 text-sm sm:text-base transition-all duration-200">
             <i class="ph-bold ph-file-arrow-down text-xl"></i>
@@ -695,7 +685,7 @@
             <i class="ph-fill ph-eye text-indigo-600 text-2xl"></i>
             Report Preview (Details & Photos)
           </h3>
-          <p class="text-xs sm:text-sm text-slate-500">Left side filled details hain aur right side large uploaded photos (RC details match karne ke liye easily readable)</p>
+          <p class="text-xs sm:text-sm text-slate-500">Left side filled details hain aur right side large uploaded photos (RC details match karne ke liye)</p>
         </div>
         <button id="closePreviewBtn" type="button" class="w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition">
           <i class="ph ph-x text-xl font-bold"></i>
@@ -703,7 +693,6 @@
       </div>
 
       <div class="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-4 p-4 sm:p-6 bg-slate-50/50">
-        <!-- Left Side: Filled Details -->
         <div class="md:col-span-4 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col overflow-y-auto max-h-[75vh] md:max-h-[82vh]">
           <h4 class="text-sm sm:text-base font-bold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
             <i class="ph-fill ph-car-profile text-indigo-600 text-lg"></i>
@@ -712,7 +701,6 @@
           <div id="previewDetailsList" class="space-y-2 text-xs sm:text-sm pr-1"></div>
         </div>
 
-        <!-- Right Side: Photos -->
         <div class="md:col-span-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
             <h4 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
@@ -751,7 +739,7 @@
     </div>
   </div>
 
-  <!-- Date Conflict Modal (Yes / No) -->
+  <!-- Date Conflict Modal -->
   <div id="dateConflictModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl transform transition-all">
       <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
@@ -774,11 +762,10 @@
     // --- SUPABASE CLOUD DATABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://qtftkrssonozonsxhiqn.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_bUvA4RRkBVqs8hq5o8_XNg_DOSfV7fY';
-    const TABLE_NAME = 'vehicle_inspections_v2'; // Nayi table name set ki gayi hai
+    const TABLE_NAME = 'vehicle_inspections_v2';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Fetch and show total records count from Cloud in badge
     async function updateExcelBadge() {
       try {
         const { count, error } = await supabaseClient
@@ -794,7 +781,6 @@
       }
     }
 
-    // Save record to Supabase
     async function saveRecordToDatabase(recordData) {
       try {
         const { error } = await supabaseClient
@@ -811,10 +797,8 @@
       }
     }
 
-    // Export ALL Team Records to Excel
     async function exportToExcel() {
       showAlert('Server se sabhi team members ka data download ho raha hai...', 'success');
-      
       try {
         const { data, error } = await supabaseClient
           .from(TABLE_NAME)
@@ -845,23 +829,10 @@
         }));
 
         const ws = XLSX.utils.json_to_sheet(formattedData);
-
         ws['!cols'] = [
-          { wch: 6 },
-          { wch: 20 },
-          { wch: 18 },
-          { wch: 16 },
-          { wch: 22 },
-          { wch: 16 },
-          { wch: 16 },
-          { wch: 14 },
-          { wch: 18 },
-          { wch: 18 },
-          { wch: 14 },
-          { wch: 16 },
-          { wch: 14 },
-          { wch: 45 },
-          { wch: 14 }
+          { wch: 6 }, { wch: 20 }, { wch: 18 }, { wch: 16 }, { wch: 22 },
+          { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 18 }, { wch: 18 },
+          { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 45 }, { wch: 14 }
         ];
 
         const wb = XLSX.utils.book_new();
@@ -941,8 +912,7 @@
       }
     }
 
-    // Theme Switcher Function
-    // --- AUTOCOMPLETE SUGGESTIONS SYSTEM ---
+    // --- AUTOCOMPLETE SYSTEM ---
     const suggestionFields = ['claimNumber', 'vehicleNumber', 'vehicleMake', 'vehicleModel', 'vehicleVariant', 'location'];
 
     function loadSuggestions() {
@@ -1013,7 +983,6 @@
       const mfgVal = parseInt(mfgEl.value);
       const regVal = parseInt(regEl.value);
 
-      // Disable regYear options less than mfgDate
       if (!isNaN(mfgVal)) {
         Array.from(regEl.options).forEach(opt => {
           if (opt.value && !isNaN(parseInt(opt.value))) {
@@ -1043,7 +1012,6 @@
         });
       }
 
-      // Disable mfgDate options greater than regYear
       if (!isNaN(regVal)) {
         Array.from(mfgEl.options).forEach(opt => {
           if (opt.value && !isNaN(parseInt(opt.value))) {
@@ -1097,7 +1065,6 @@
       updateExcelBadge();
       loadSuggestions();
 
-      // Smooth 2.5-second auto-transition animation
       setTimeout(() => {
         closeWelcomeModal();
       }, 2500);
@@ -1447,7 +1414,6 @@
         return;
       }
 
-      // Manufacturing Date cannot be greater than Registration Date validation (Strict Error, Block Generation)
       const mfgNum = parseInt(mfgDate);
       const regNum = parseInt(regYear);
       if (!isNaN(mfgNum) && !isNaN(regNum) && regNum < mfgNum) {
@@ -1525,7 +1491,6 @@
       previewModal.classList.remove('hidden');
     }
 
-    // Date Conflict Modal Yes / No Handlers
     document.getElementById('dateConflictYesBtn').addEventListener('click', () => {
       document.getElementById('dateConflictModal').classList.add('hidden');
       document.getElementById('mfgDate').classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
@@ -1707,7 +1672,6 @@
           const origW = imgElement.naturalWidth || imgElement.width || 800;
           const origH = imgElement.naturalHeight || imgElement.height || 600;
 
-          // Draw onto a canvas with solid white background to eliminate black backgrounds, blur and compression artifacts
           const canvas = document.createElement('canvas');
           canvas.width = origW;
           canvas.height = origH;
@@ -1778,7 +1742,6 @@
           doc.save(fileName);
         }
 
-        // --- SAVE RECORD TO SUPABASE CLOUD (vehicle_inspections_v2) ---
         const cloudRecord = {
           claim_number: claimNumber,
           vehicle_number: vehicleNumber.toUpperCase(),
@@ -1860,6 +1823,53 @@
       });
     }
 
+    // --- AUDIO HANDLING & SCHEDULE (chhhuti-ho-gai.mp3) ---
+    // Updated accurate filename with proper encoding & error tracking
+    const closingAudio = new Audio('chhhuti-ho-gai.mp3');
+    closingAudio.id = 'closingAudio';
+    closingAudio.preload = 'auto';
+    closingAudio.volume = 1.0;
+
+    closingAudio.addEventListener('error', (e) => {
+      console.error('Audio file load nahi ho saki. Make sure chhhuti-ho-gai.mp3 exists in the same folder.', e);
+    });
+
+    let audioUnlocked = false;
+    function unlockClosingAudio() {
+      if (audioUnlocked) return;
+      closingAudio.play().then(() => {
+        closingAudio.pause();
+        closingAudio.currentTime = 0;
+        audioUnlocked = true;
+        console.log('Audio Autoplay policy unlocked successfully.');
+      }).catch(err => {
+        console.warn('Audio waiting for explicit user interaction:', err);
+      });
+    }
+
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, unlockClosingAudio, { once: true });
+    });
+
+    function playAudioSequence(timesLeft) {
+      if (timesLeft <= 0) return;
+      closingAudio.volume = 1.0;
+      closingAudio.currentTime = 0;
+      closingAudio.play().then(() => {
+        if (timesLeft > 1) {
+          closingAudio.onended = () => {
+            closingAudio.onended = null;
+            const gap = Math.floor(Math.random() * 1000) + 1000;
+            setTimeout(() => {
+              playAudioSequence(timesLeft - 1);
+            }, gap);
+          };
+        }
+      }).catch(err => {
+        console.warn('Audio play was prevented by browser:', err);
+      });
+    }
+
     const testAudioBtn = document.getElementById('testAudioBtn');
     if (testAudioBtn) {
       testAudioBtn.addEventListener('click', () => {
@@ -1902,76 +1912,30 @@
       }
     }
 
-    // --- AUTOMATIC OFFICE CLOSING AUDIO REMINDER (Mon-Sun at 18:29 IST) ---
-    const closingAudio = document.createElement('audio');
-    closingAudio.id = 'closingAudio';
-    closingAudio.src = 'chhuti ho gai.mp3';
-    closingAudio.preload = 'auto';
-    closingAudio.loop = false;
-    closingAudio.volume = 1.0;
-    document.body.appendChild(closingAudio);
-
-    let audioUnlocked = false;
-    function unlockClosingAudio() {
-      if (audioUnlocked) return;
-      closingAudio.muted = true;
-      closingAudio.play().then(() => {
-        closingAudio.pause();
-        closingAudio.muted = false;
-        audioUnlocked = true;
-      }).catch(e => {
-        // Will retry on next interaction
-      });
-    }
-
-    ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'].forEach(evt => {
-      window.addEventListener(evt, unlockClosingAudio, { once: true });
-    });
-
-    function playAudioSequence(timesLeft) {
-      if (timesLeft <= 0) return;
-      closingAudio.volume = 1.0;
-      closingAudio.currentTime = 0;
-      closingAudio.play().then(() => {
-        if (timesLeft > 1) {
-          closingAudio.onended = () => {
-            closingAudio.onended = null;
-            // 1 to 2-second gap (random between 1000ms and 2000ms)
-            const gap = Math.floor(Math.random() * 1000) + 1000;
-            setTimeout(() => {
-              playAudioSequence(timesLeft - 1);
-            }, gap);
-          };
-        }
-      }).catch(err => {
-        console.warn('Closing audio autoplay blocked:', err);
-      });
-    }
-
+    // --- AUTOMATIC TIME CHECK: Set to 2:55 PM (14:55 IST) for testing ---
     function checkOfficeClosingSchedule() {
       try {
         const now = new Date();
-        const options = { timeZone: 'Asia/Kolkata', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', weekday: 'short' };
+        const options = { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit', year: 'numeric', month: '2-digit', day: '2-digit' };
         const formatter = new Intl.DateTimeFormat('en-US', options);
         const parts = formatter.formatToParts(now);
 
-        let year, month, day, hour, minute, weekday;
+        let year, month, day, hour, minute;
         parts.forEach(p => {
           if (p.type === 'year') year = p.value;
           if (p.type === 'month') month = p.value;
           if (p.type === 'day') day = p.value;
           if (p.type === 'hour') hour = parseInt(p.value, 10);
           if (p.type === 'minute') minute = parseInt(p.value, 10);
-          if (p.type === 'weekday') weekday = p.value;
         });
 
-        // Exact time: 2:25 PM (14:25) - Runs Monday to Sunday (Every day)
-        if (hour === 14 && minute === 38) {
+        // Exact time: 2:55 PM (14:55) IST
+        if (hour === 14 && minute === 55) {
           const dateKey = `gaadi_audio_played_${year}-${month}-${day}_${hour}_${minute}`;
           if (localStorage.getItem(dateKey) !== 'true') {
             localStorage.setItem(dateKey, 'true');
             playAudioSequence(2);
-            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:38 PM.', 'success');
+            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:55 PM.', 'success');
           }
         }
       } catch (err) {
@@ -1979,7 +1943,6 @@
       }
     }
 
-    // Check schedule every second
     setInterval(checkOfficeClosingSchedule, 1000);
   </script>
 </body>
