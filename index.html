@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vehicle Claim & Inspection PDF Report</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/ico" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Google Fonts: Orbitron & Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- jsPDF Library -->
@@ -68,14 +70,67 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    @keyframes silverPlatinumShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes lightSweep {
+      0% { transform: translateX(-100%) rotate(25deg); }
+      100% { transform: translateX(200%) rotate(25deg); }
+    }
+
+    @keyframes subtleRedGlowPulse {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.35)); }
+      50% { filter: drop-shadow(0 0 35px rgba(251, 113, 133, 0.65)); }
+    }
+
     .gaadi-expert-effect {
-      background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #3b82f6, #6366f1);
-      background-size: 300% auto;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #94a3b8 70%, #f1f5f9 100%);
+      background-size: 200% auto;
       color: transparent;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: simpleColorShift 6s ease infinite;
+      animation: silverPlatinumShine 6s linear infinite;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(244, 63, 94, 0.3);
       display: inline-block;
+      letter-spacing: 0.05em;
+    }
+
+    .luxury-automotive-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.3rem, 6vw, 4.5rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 25%, #ffffff 50%, #94a3b8 75%, #e2e8f0 100%);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: silverPlatinumShine 6s linear infinite, subtleRedGlowPulse 4s ease-in-out infinite;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7),
+                   0 2px 4px rgba(0, 0, 0, 0.9),
+                   0 6px 20px rgba(244, 63, 94, 0.4),
+                   0 12px 35px rgba(159, 18, 57, 0.6);
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+    }
+
+    .luxury-automotive-title::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(to right, transparent, rgba(253, 164, 175, 0.5), transparent);
+      transform: rotate(25deg);
+      animation: lightSweep 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      pointer-events: none;
     }
 
     @keyframes borderDashFlow {
@@ -125,6 +180,13 @@
       background-color: #ffffff !important;
     }
 
+    .invalid-glow {
+      border: 2px solid #f43f5e !important;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.65), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+      background-color: #fff1f2 !important;
+      color: #9f1239 !important;
+    }
+
     /* Custom Theme Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
@@ -164,9 +226,69 @@
       background-color: #f1f5f9 !important;
       color: #0f172a !important;
     }
+    select option:disabled {
+      color: #cbd5e1 !important;
+      background-color: #f8fafc !important;
+      font-style: italic !important;
+    }
+
+    @keyframes textShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes metallicShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes introZoomIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(15px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .intro-container {
+      animation: introZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="min-h-full flex flex-col text-slate-800 pb-28">
+
+  <!-- Full Screen Landing Intro Animation -->
+  <div id="welcomeModal" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#030712] text-white px-4 transition-all duration-700 overflow-hidden">
+    <!-- Subtle Red Ambient Lighting -->
+    <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-rose-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse"></div>
+    <div class="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
+    
+    <div class="relative z-10 max-w-4xl w-full mx-auto text-center flex flex-col items-center intro-container">
+      
+      <!-- Top Corporate Badge -->
+      <div class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-slate-950/90 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-semibold tracking-widest uppercase mb-8 shadow-[0_0_30px_rgba(244,63,94,0.25)] backdrop-blur-md">
+        <i class="ph-fill ph-sparkle text-rose-400 animate-spin"></i>
+        <span>Automotive Technology & Corporate Intro</span>
+      </div>
+
+      <!-- Favicon & Brand Row -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mb-5">
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-rose-500/40 shadow-[0_0_30px_rgba(244,63,94,0.4)] backdrop-blur-md flex items-center justify-center transition-transform hover:scale-105 duration-300">
+          <img src="favicon.png" alt="Gaadi Experts Favicon" class="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_15px_rgba(244,63,94,0.8)]" onerror="this.style.display='none';">
+        </div>
+        <h1 class="luxury-automotive-title">GAADI EXPERTS</h1>
+      </div>
+
+      <!-- Subtitle / Description -->
+      <p class="text-rose-200/90 text-sm sm:text-base font-medium tracking-wide mb-6">
+        Vehicle Claim PDF Generator & Professional Inspection Report
+      </p>
+
+      <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed tracking-wide">
+        Welcome to Gaadi Experts Page. Loading advanced automotive diagnostic suite...
+      </p>
+
+    </div>
+  </div>
 
   <!-- Header -->
   <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-700 transition-colors duration-300">
@@ -256,8 +378,9 @@
             <label for="claimNumber" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Claim Number <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="claimNumber" required placeholder="e.g. CLM-2024-9842" 
+            <input type="text" id="claimNumber" list="claimNumberList" required placeholder="e.g. CLM-2024-9842" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="claimNumberList"></datalist>
           </div>
 
           <!-- Vehicle Number -->
@@ -265,8 +388,9 @@
             <label for="vehicleNumber" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Vehicle Number <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="vehicleNumber" required placeholder="e.g. DL 01 AB 1234" 
+            <input type="text" id="vehicleNumber" list="vehicleNumberList" required placeholder="e.g. DL 01 AB 1234" 
               class="w-full uppercase font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="vehicleNumberList"></datalist>
           </div>
 
           <!-- Insurance Company (Dropdown) -->
@@ -300,8 +424,9 @@
             <label for="vehicleMake" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Make <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="vehicleMake" required placeholder="e.g. Hyundai" 
+            <input type="text" id="vehicleMake" list="vehicleMakeList" required placeholder="e.g. Hyundai" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="vehicleMakeList"></datalist>
           </div>
 
           <!-- Model -->
@@ -309,8 +434,9 @@
             <label for="vehicleModel" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Model <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="vehicleModel" required placeholder="e.g. Creta" 
+            <input type="text" id="vehicleModel" list="vehicleModelList" required placeholder="e.g. Creta" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="vehicleModelList"></datalist>
           </div>
 
           <!-- Variant -->
@@ -318,8 +444,9 @@
             <label for="vehicleVariant" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Variant <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="vehicleVariant" required placeholder="e.g. SX" 
+            <input type="text" id="vehicleVariant" list="vehicleVariantList" required placeholder="e.g. SX" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="vehicleVariantList"></datalist>
           </div>
 
           <!-- Manufacturing Year (Dropdown 2000 to 2030) -->
@@ -469,8 +596,9 @@
             <label for="location" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
               Location / Address <span class="text-rose-500 font-bold">*</span>
             </label>
-            <input type="text" id="location" required placeholder="e.g. Workshop / Dealership Address with Pin code & City" 
+            <input type="text" id="location" list="locationList" required placeholder="e.g. Workshop / Dealership Address with Pin code & City" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+            <datalist id="locationList"></datalist>
           </div>
 
           <!-- Vehicle Photos Upload -->
@@ -614,6 +742,25 @@
       <button id="closeSuccessModalBtn" type="button" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition cursor-pointer">
         OK / Done
       </button>
+    </div>
+  </div>
+
+  <!-- Date Conflict Modal (Yes / No) -->
+  <div id="dateConflictModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl transform transition-all">
+      <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+        <i class="ph-bold ph-warning"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">Manufacturing Date Error</h3>
+      <p id="dateConflictText" class="text-xs sm:text-sm text-slate-600 mb-6">Manufacturing Year (<span id="conflictMfg" class="font-bold text-rose-600"></span>) Registration Year (<span id="conflictReg" class="font-bold text-slate-800"></span>) se zyada nahi ho sakti! Kya aap fir bhi proceed karna chahte hain?</p>
+      <div class="flex gap-3">
+        <button id="dateConflictNoBtn" type="button" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl transition cursor-pointer text-xs sm:text-sm">
+          No (Registration Date theek karein)
+        </button>
+        <button id="dateConflictYesBtn" type="button" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition cursor-pointer text-xs sm:text-sm">
+          Yes (Proceed karein)
+        </button>
+      </div>
     </div>
   </div>
 
@@ -789,6 +936,39 @@
     }
 
     // Theme Switcher Function
+    // --- AUTOCOMPLETE SUGGESTIONS SYSTEM ---
+    const suggestionFields = ['claimNumber', 'vehicleNumber', 'vehicleMake', 'vehicleModel', 'vehicleVariant', 'location'];
+
+    function loadSuggestions() {
+      suggestionFields.forEach(fieldId => {
+        const datalist = document.getElementById(fieldId + 'List');
+        if (!datalist) return;
+        try {
+          const saved = JSON.parse(localStorage.getItem('gaadi_suggestions_' + fieldId) || '[]');
+          datalist.innerHTML = saved.map(val => `<option value="${val}">`).join('');
+        } catch (e) {
+          console.error('Error loading suggestions for ' + fieldId, e);
+        }
+      });
+    }
+
+    function saveSuggestion(fieldId, value) {
+      if (!value || !value.trim()) return;
+      const val = value.trim();
+      try {
+        const key = 'gaadi_suggestions_' + fieldId;
+        let saved = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!saved.includes(val)) {
+          saved.unshift(val);
+          if (saved.length > 50) saved = saved.slice(0, 50);
+          localStorage.setItem(key, JSON.stringify(saved));
+          loadSuggestions();
+        }
+      } catch (e) {
+        console.error('Error saving suggestion for ' + fieldId, e);
+      }
+    }
+
     function switchTheme(newTheme, save = true) {
       document.body.setAttribute('data-theme', newTheme);
       const themes = ['indigo', 'emerald', 'blue', 'rose', 'amber', 'slate'];
@@ -821,6 +1001,86 @@
       }
     }
 
+    function validateDates() {
+      const mfgEl = document.getElementById('mfgDate');
+      const regEl = document.getElementById('regYear');
+      const mfgVal = parseInt(mfgEl.value);
+      const regVal = parseInt(regEl.value);
+
+      // Disable regYear options less than mfgDate
+      if (!isNaN(mfgVal)) {
+        Array.from(regEl.options).forEach(opt => {
+          if (opt.value && !isNaN(parseInt(opt.value))) {
+            if (parseInt(opt.value) < mfgVal) {
+              opt.disabled = true;
+              opt.style.color = '#cbd5e1';
+              opt.style.backgroundColor = '#f8fafc';
+              opt.style.fontStyle = 'italic';
+            } else {
+              opt.disabled = false;
+              opt.style.color = '';
+              opt.style.backgroundColor = '';
+              opt.style.fontStyle = '';
+            }
+          }
+        });
+        if (!isNaN(regVal) && regVal < mfgVal) {
+          regEl.value = '';
+          updateFieldGlow(regEl);
+        }
+      } else {
+        Array.from(regEl.options).forEach(opt => {
+          opt.disabled = false;
+          opt.style.color = '';
+          opt.style.backgroundColor = '';
+          opt.style.fontStyle = '';
+        });
+      }
+
+      // Disable mfgDate options greater than regYear
+      if (!isNaN(regVal)) {
+        Array.from(mfgEl.options).forEach(opt => {
+          if (opt.value && !isNaN(parseInt(opt.value))) {
+            if (parseInt(opt.value) > regVal) {
+              opt.disabled = true;
+              opt.style.color = '#cbd5e1';
+              opt.style.backgroundColor = '#f8fafc';
+              opt.style.fontStyle = 'italic';
+            } else {
+              opt.disabled = false;
+              opt.style.color = '';
+              opt.style.backgroundColor = '';
+              opt.style.fontStyle = '';
+            }
+          }
+        });
+        if (!isNaN(mfgVal) && mfgVal > regVal) {
+          mfgEl.value = '';
+          updateFieldGlow(mfgEl);
+        }
+      } else {
+        Array.from(mfgEl.options).forEach(opt => {
+          opt.disabled = false;
+          opt.style.color = '';
+          opt.style.backgroundColor = '';
+          opt.style.fontStyle = '';
+        });
+      }
+
+      if (!isNaN(mfgVal) && !isNaN(regVal)) {
+        if (regVal < mfgVal) {
+          regEl.classList.add('invalid-glow');
+          regEl.classList.remove('filled-glow');
+        } else {
+          regEl.classList.remove('invalid-glow');
+          updateFieldGlow(regEl);
+        }
+      } else {
+        regEl.classList.remove('invalid-glow');
+        updateFieldGlow(regEl);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('gaadi_theme') || 'indigo';
       document.body.setAttribute('data-theme', savedTheme);
@@ -829,6 +1089,12 @@
       }
       initFolderSelection();
       updateExcelBadge();
+      loadSuggestions();
+
+      // Smooth 2.5-second auto-transition animation
+      setTimeout(() => {
+        closeWelcomeModal();
+      }, 2500);
 
       const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
       formInputs.forEach(el => {
@@ -836,8 +1102,22 @@
         updateFieldGlow(el);
         el.addEventListener('input', () => updateFieldGlow(el));
         el.addEventListener('change', () => updateFieldGlow(el));
-        el.addEventListener('blur', () => updateFieldGlow(el));
+        el.addEventListener('blur', () => {
+          updateFieldGlow(el);
+          if (suggestionFields.includes(el.id)) {
+            saveSuggestion(el.id, el.value);
+          }
+        });
       });
+
+      const mfgEl = document.getElementById('mfgDate');
+      const regEl = document.getElementById('regYear');
+      if (mfgEl && regEl) {
+        mfgEl.addEventListener('change', validateDates);
+        regEl.addEventListener('change', validateDates);
+        mfgEl.addEventListener('input', validateDates);
+        regEl.addEventListener('input', validateDates);
+      }
     });
 
     const folderSelectBtn = document.getElementById('folderSelectBtn');
@@ -1161,6 +1441,36 @@
         return;
       }
 
+      // Manufacturing Date cannot be greater than Registration Date validation (Strict Error, Block Generation)
+      const mfgNum = parseInt(mfgDate);
+      const regNum = parseInt(regYear);
+      if (!isNaN(mfgNum) && !isNaN(regNum) && regNum < mfgNum) {
+        const mfgEl = document.getElementById('mfgDate');
+        const regEl = document.getElementById('regYear');
+        regEl.classList.add('invalid-glow');
+        mfgEl.classList.add('invalid-glow');
+
+        showAlert('Error: Registration Year Manufacturing Year se kam nahi ho sakti! Kripya valid dates select karein.', 'error');
+        return;
+      }
+
+      proceedWithPreview();
+    });
+
+    function proceedWithPreview() {
+      const claimNumber = document.getElementById('claimNumber').value.trim();
+      const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+      const insuranceCompany = document.getElementById('insuranceCompany').value;
+      const vehicleMake = document.getElementById('vehicleMake').value.trim();
+      const vehicleModel = document.getElementById('vehicleModel').value.trim();
+      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
+      const quoteType = document.getElementById('quoteType').value;
+      const mfgDate = document.getElementById('mfgDate').value.trim();
+      const regYear = document.getElementById('regYear').value.trim();
+      const fuelType = document.getElementById('fuelType').value;
+      const ownership = document.getElementById('ownership').value;
+      const location = document.getElementById('location').value.trim();
+
       const fields = [
         { label: 'Claim Number', value: claimNumber },
         { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
@@ -1207,6 +1517,25 @@
       `).join('');
 
       previewModal.classList.remove('hidden');
+    }
+
+    // Date Conflict Modal Yes / No Handlers
+    document.getElementById('dateConflictYesBtn').addEventListener('click', () => {
+      document.getElementById('dateConflictModal').classList.add('hidden');
+      document.getElementById('mfgDate').classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+      document.getElementById('regYear').classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+      proceedWithPreview();
+    });
+
+    document.getElementById('dateConflictNoBtn').addEventListener('click', () => {
+      document.getElementById('dateConflictModal').classList.add('hidden');
+      const mfgEl = document.getElementById('mfgDate');
+      const regEl = document.getElementById('regYear');
+      regEl.value = mfgEl.value;
+      updateFieldGlow(regEl);
+      mfgEl.classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+      regEl.classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+      showAlert('Registration Year ko Manufacturing Year ke barabar set kar diya gaya hai.', 'success');
     });
 
     confirmDownloadBtn.addEventListener('click', async () => {
@@ -1226,6 +1555,13 @@
       const fuelType = document.getElementById('fuelType').value;
       const ownership = document.getElementById('ownership').value;
       const location = document.getElementById('location').value.trim();
+
+      suggestionFields.forEach(fieldId => {
+        const el = document.getElementById(fieldId);
+        if (el && el.value) {
+          saveSuggestion(fieldId, el.value);
+        }
+      });
 
       loadingModal.classList.remove('hidden');
       progressBar.style.width = '20%';
@@ -1518,10 +1854,118 @@
       });
     }
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const successModal = document.getElementById('successModal');
+        if (successModal && !successModal.classList.contains('hidden')) {
+          e.preventDefault();
+          const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
+          if (closeSuccessModalBtn) {
+            closeSuccessModalBtn.click();
+          }
+        }
+      }
+    });
+
     function showSuccessPopup(fileName) {
       if (successModalText) successModalText.textContent = fileName;
-      if (successModal) successModal.classList.remove('hidden');
+      if (successModal) {
+        successModal.classList.remove('hidden');
+        const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
+        if (closeSuccessModalBtn) {
+          closeSuccessModalBtn.focus();
+        }
+      }
     }
+
+    function closeWelcomeModal() {
+      const modal = document.getElementById('welcomeModal');
+      if (modal) {
+        modal.classList.add('opacity-0', 'scale-105', 'pointer-events-none');
+        setTimeout(() => {
+          modal.remove();
+        }, 700);
+      }
+    }
+
+    // --- AUTOMATIC OFFICE CLOSING AUDIO REMINDER (Mon-Sun at 18:29 IST) ---
+    const closingAudio = document.createElement('audio');
+    closingAudio.id = 'closingAudio';
+    closingAudio.src = 'chhuti ho gai.mp3';
+    closingAudio.preload = 'auto';
+    closingAudio.loop = false;
+    closingAudio.volume = 1.0;
+    document.body.appendChild(closingAudio);
+
+    let audioUnlocked = false;
+    function unlockClosingAudio() {
+      if (audioUnlocked) return;
+      closingAudio.muted = true;
+      closingAudio.play().then(() => {
+        closingAudio.pause();
+        closingAudio.muted = false;
+        audioUnlocked = true;
+      }).catch(e => {
+        // Will retry on next interaction
+      });
+    }
+
+    ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'].forEach(evt => {
+      window.addEventListener(evt, unlockClosingAudio, { once: true });
+    });
+
+    function playAudioSequence(timesLeft) {
+      if (timesLeft <= 0) return;
+      closingAudio.volume = 1.0;
+      closingAudio.currentTime = 0;
+      closingAudio.play().then(() => {
+        if (timesLeft > 1) {
+          closingAudio.onended = () => {
+            closingAudio.onended = null;
+            // 1 to 2-second gap (random between 1000ms and 2000ms)
+            const gap = Math.floor(Math.random() * 1000) + 1000;
+            setTimeout(() => {
+              playAudioSequence(timesLeft - 1);
+            }, gap);
+          };
+        }
+      }).catch(err => {
+        console.warn('Closing audio autoplay blocked:', err);
+      });
+    }
+
+    function checkOfficeClosingSchedule() {
+      try {
+        const now = new Date();
+        const options = { timeZone: 'Asia/Kolkata', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', weekday: 'short' };
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        const parts = formatter.formatToParts(now);
+
+        let year, month, day, hour, minute, weekday;
+        parts.forEach(p => {
+          if (p.type === 'year') year = p.value;
+          if (p.type === 'month') month = p.value;
+          if (p.type === 'day') day = p.value;
+          if (p.type === 'hour') hour = parseInt(p.value, 10);
+          if (p.type === 'minute') minute = parseInt(p.value, 10);
+          if (p.type === 'weekday') weekday = p.value;
+        });
+
+        // Exact time: 18:29 (6:29 PM) - Runs Monday to Sunday (Every day)
+        if (hour === 18 && minute === 29) {
+          const dateKey = `gaadi_audio_played_${year}-${month}-${day}`;
+          if (localStorage.getItem(dateKey) !== 'true') {
+            localStorage.setItem(dateKey, 'true');
+            playAudioSequence(2);
+          }
+        }
+      } catch (err) {
+        console.error('Schedule check error:', err);
+      }
+    }
+
+    // Check schedule every second
+    setInterval(checkOfficeClosingSchedule, 1000);
   </script>
 </body>
 </html>
