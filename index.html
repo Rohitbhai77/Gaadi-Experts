@@ -1824,14 +1824,14 @@
     }
 
     // --- AUDIO HANDLING & SCHEDULE (chhhuti-ho-gai.mp3) ---
-    // Updated accurate filename with proper encoding & error tracking
+   // --- AUTOMATIC OFFICE CLOSING AUDIO (Monday to Saturday at 6:29 PM IST) ---
     const closingAudio = new Audio('chhhuti-ho-gai.mp3');
     closingAudio.id = 'closingAudio';
     closingAudio.preload = 'auto';
     closingAudio.volume = 1.0;
 
     closingAudio.addEventListener('error', (e) => {
-      console.error('Audio file load nahi ho saki. Make sure chhhuti-ho-gai.mp3 exists in the same folder.', e);
+      console.error('Audio file load error. Make sure chhhuti-ho-gai.mp3 is in the root directory.', e);
     });
 
     let audioUnlocked = false;
@@ -1841,13 +1841,14 @@
         closingAudio.pause();
         closingAudio.currentTime = 0;
         audioUnlocked = true;
-        console.log('Audio Autoplay policy unlocked successfully.');
+        console.log('Audio autoplay policy successfully unlocked for this session.');
       }).catch(err => {
-        console.warn('Audio waiting for explicit user interaction:', err);
+        console.warn('Audio waiting for direct user gesture:', err);
       });
     }
 
-    ['click', 'touchstart', 'keydown'].forEach(evt => {
+    // Har direct user input par unlock trigger hoga
+    ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
       window.addEventListener(evt, unlockClosingAudio, { once: true });
     });
 
@@ -1866,7 +1867,8 @@
           };
         }
       }).catch(err => {
-        console.warn('Audio play was prevented by browser:', err);
+        console.warn('Audio play was blocked by browser:', err);
+        showAlert('🔊 Chhuti ka time ho gaya! (Browser ne audio block kiya, screen par click karein)', 'error');
       });
     }
 
@@ -1878,64 +1880,43 @@
       });
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const successModal = document.getElementById('successModal');
-        if (successModal && !successModal.classList.contains('hidden')) {
-          e.preventDefault();
-          const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
-          if (closeSuccessModalBtn) {
-            closeSuccessModalBtn.click();
-          }
-        }
-      }
-    });
-
-    function showSuccessPopup(fileName) {
-      if (successModalText) successModalText.textContent = fileName;
-      if (successModal) {
-        successModal.classList.remove('hidden');
-        const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
-        if (closeSuccessModalBtn) {
-          closeSuccessModalBtn.focus();
-        }
-      }
-    }
-
-    function closeWelcomeModal() {
-      const modal = document.getElementById('welcomeModal');
-      if (modal) {
-        modal.classList.add('opacity-0', 'scale-105', 'pointer-events-none');
-        setTimeout(() => {
-          modal.remove();
-        }, 700);
-      }
-    }
-
-    // --- AUTOMATIC TIME CHECK: Set to 2:55 PM (14:55 IST) for testing ---
+    // Schedule check: Monday to Saturday at 6:29 PM (18:29 IST)
     function checkOfficeClosingSchedule() {
       try {
         const now = new Date();
-        const options = { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit', year: 'numeric', month: '2-digit', day: '2-digit' };
+        const options = { 
+          timeZone: 'Asia/Kolkata', 
+          hour12: false, 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit',
+          weekday: 'short'
+        };
         const formatter = new Intl.DateTimeFormat('en-US', options);
         const parts = formatter.formatToParts(now);
 
-        let year, month, day, hour, minute;
+        let year, month, day, hour, minute, weekday;
         parts.forEach(p => {
           if (p.type === 'year') year = p.value;
           if (p.type === 'month') month = p.value;
           if (p.type === 'day') day = p.value;
           if (p.type === 'hour') hour = parseInt(p.value, 10);
           if (p.type === 'minute') minute = parseInt(p.value, 10);
+          if (p.type === 'weekday') weekday = p.value; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
         });
 
-        // Exact time: 2:55 PM (14:55) IST
-        if (hour === 14 && minute === 55) {
-          const dateKey = `gaadi_audio_played_${year}-${month}-${day}_${hour}_${minute}`;
+        // Sunday ko run nahi hoga (Sirf Monday se Saturday)
+        const isWorkingDay = weekday !== 'Sun';
+
+        // Sham ke 6:29 PM (18:29 IST)
+        if (isWorkingDay && hour === 18 && minute === 29) {
+          const dateKey = `gaadi_audio_played_${year}-${month}-${day}_18_29`;
           if (localStorage.getItem(dateKey) !== 'true') {
             localStorage.setItem(dateKey, 'true');
             playAudioSequence(2);
-            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:55 PM.', 'success');
+            showAlert('🔊 Chhuti ho gayi! Office closing audio reminder triggered.', 'success');
           }
         }
       } catch (err) {
@@ -1943,7 +1924,8 @@
       }
     }
 
-    setInterval(checkOfficeClosingSchedule, 1000);
+    // Har 5 second me check hoga
+    setInterval(checkOfficeClosingSchedule, 5000);
   </script>
 </body>
 </html>
