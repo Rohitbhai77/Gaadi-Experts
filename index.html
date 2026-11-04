@@ -1055,6 +1055,16 @@
       }
     }
 
+    function closeWelcomeModal() {
+      const modal = document.getElementById('welcomeModal');
+      if (modal) {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 700);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('gaadi_theme') || 'indigo';
       document.body.setAttribute('data-theme', savedTheme);
