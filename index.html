@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vehicle Claim & Inspection PDF Report</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/ico" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png">
   <!-- Google Fonts: Orbitron & Montserrat -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
@@ -348,6 +348,12 @@
           <i class="ph ph-clock-counter-clockwise text-base"></i>
           <span class="hidden md:inline">Restore Data</span>
           <span class="md:hidden">Restore</span>
+        </button>
+
+        <!-- Test Audio Button -->
+        <button id="testAudioBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Test Chhuti Audio">
+          <i class="ph ph-speaker-high text-base"></i>
+          <span class="hidden md:inline">Test Audio</span>
         </button>
       </div>
     </div>
@@ -1854,6 +1860,14 @@
       });
     }
 
+    const testAudioBtn = document.getElementById('testAudioBtn');
+    if (testAudioBtn) {
+      testAudioBtn.addEventListener('click', () => {
+        playAudioSequence(2);
+        showAlert('🔊 Chhuti audio test played!', 'success');
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const successModal = document.getElementById('successModal');
@@ -1951,12 +1965,13 @@
           if (p.type === 'weekday') weekday = p.value;
         });
 
-        // Exact time: 13:27 (1:27 PM) - Runs Monday to Sunday (Every day)
-        if (hour === 13 && minute === 27) {
-          const dateKey = `gaadi_audio_played_${year}-${month}-${day}`;
+        // Exact time: 2:25 PM (14:25) - Runs Monday to Sunday (Every day)
+        if (hour === 14 && minute === 25) {
+          const dateKey = `gaadi_audio_played_${year}-${month}-${day}_${hour}_${minute}`;
           if (localStorage.getItem(dateKey) !== 'true') {
             localStorage.setItem(dateKey, 'true');
             playAudioSequence(2);
+            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:25 PM.', 'success');
           }
         }
       } catch (err) {
