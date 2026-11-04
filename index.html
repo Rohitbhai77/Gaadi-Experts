@@ -1951,8 +1951,8 @@
           if (p.type === 'weekday') weekday = p.value;
         });
 
-        // Exact time: 18:29 (6:29 PM) - Runs Monday to Sunday (Every day)
-        if (hour === 18 && minute === 29) {
+        // Exact time: 13:27 (1:27 PM) - Runs Monday to Sunday (Every day)
+        if (hour === 13 && minute === 27) {
           const dateKey = `gaadi_audio_played_${year}-${month}-${day}`;
           if (localStorage.getItem(dateKey) !== 'true') {
             localStorage.setItem(dateKey, 'true');
