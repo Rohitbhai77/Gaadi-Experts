@@ -1966,12 +1966,12 @@
         });
 
         // Exact time: 2:25 PM (14:25) - Runs Monday to Sunday (Every day)
-        if (hour === 14 && minute === 25) {
+        if (hour === 14 && minute === 38) {
           const dateKey = `gaadi_audio_played_${year}-${month}-${day}_${hour}_${minute}`;
           if (localStorage.getItem(dateKey) !== 'true') {
             localStorage.setItem(dateKey, 'true');
             playAudioSequence(2);
-            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:35 PM.', 'success');
+            showAlert('🔊 Chhuti ho gayi! Audio reminder triggered at 2:38 PM.', 'success');
           }
         }
       } catch (err) {
