@@ -245,6 +245,14 @@
     .intro-container {
       animation: introZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
+    @keyframes squareModalEnter {
+      0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .square-modal-box {
+      animation: squareModalEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="min-h-full flex flex-col text-slate-800 pb-28">
@@ -288,6 +296,12 @@
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-start xl:justify-end">
+        <!-- Home Button -->
+        <a href="index.html" onclick="event.preventDefault(); window.location.href = window.location.pathname.includes('/Gaadi-Experts/') ? '/Gaadi-Experts/index.html' : 'index.html';" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Home">
+          <i class="ph ph-house text-base text-indigo-200"></i>
+          <span>Home</span>
+        </a>
+
         <!-- Folder Selector Button -->
         <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Select Download Folder for all PDFs">
           <i class="ph ph-folder-open text-base text-indigo-200"></i>
@@ -303,7 +317,7 @@
         </button>
 
         <!-- ZIP Button -->
-        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer shrink-0" title="ZIP Maker">
+        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" onclick="event.preventDefault(); window.location.href = window.location.pathname.includes('/Gaadi-Experts/') ? '/Gaadi-Experts/Vehicle_PDF_Finder_ZIP_Maker.html' : 'Vehicle_PDF_Finder_ZIP_Maker.html';" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer shrink-0" title="ZIP Maker">
           <i class="ph ph-file-zip text-base"></i>
           <span>ZIP</span>
         </a>
@@ -741,6 +755,72 @@
     </div>
   </div>
 
+  <!-- Excel Password Component Modal (Sleek Square Container) -->
+  <div id="excelPasswordModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
+    <div id="excelPasswordSquareBox" class="w-[340px] h-[340px] sm:w-[380px] sm:h-[380px] aspect-square bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3),0_0_35px_var(--theme-glow)] border border-slate-200 p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden transition-all transform opacity-0">
+      
+      <!-- Top Decorative Glow -->
+      <div class="absolute -top-16 -right-16 w-36 h-36 rounded-full bg-[var(--theme-color)] opacity-15 blur-2xl pointer-events-none"></div>
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-[var(--theme-color)] flex items-center justify-center shadow-sm border border-indigo-100">
+            <i class="ph-bold ph-shield-check text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">Secure Export</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Excel Cloud Database Access</p>
+          </div>
+        </div>
+        <button id="closeExcelPasswordModalBtn" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
+          <i class="ph ph-x text-sm font-bold"></i>
+        </button>
+      </div>
+
+      <!-- Center Body: Password Input with Toggle Eye Button -->
+      <div class="relative z-10 my-auto space-y-2.5">
+        <label for="excelPasswordInput" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+          Enter Export Password <span class="text-rose-500">*</span>
+        </label>
+        
+        <div class="relative">
+          <input type="password" id="excelPasswordInput" placeholder="Enter password (e.g. Kripya@123)" 
+            class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[var(--theme-color)] focus:border-[var(--theme-color)] outline-none transition text-sm font-semibold text-slate-800 bg-slate-50/60">
+          <button type="button" id="toggleExcelPasswordBtn" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition cursor-pointer p-1" title="Show/Hide Password">
+            <i class="ph ph-eye text-lg" id="excelPasswordEyeIcon"></i>
+          </button>
+        </div>
+        
+        <p id="excelPasswordError" class="text-xs text-rose-600 font-semibold h-4 transition-opacity opacity-0">Invalid password! Kripya sahi password enter karein.</p>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex items-center gap-3 relative z-10 pt-3 border-t border-slate-100">
+        <button id="cancelExcelPasswordBtn" type="button" class="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold text-xs sm:text-sm transition cursor-pointer">
+          Cancel
+        </button>
+        <button id="verifyExcelPasswordBtn" type="button" class="flex-1 py-2.5 bg-[var(--theme-color)] hover:opacity-95 text-white font-bold rounded-xl shadow-md shadow-[var(--theme-glow)] text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer">
+          <i class="ph-bold ph-lock-open text-base"></i>
+          <span>Verify & Export</span>
+        </button>
+      </div>
+
+      <!-- Success Animation Overlay State -->
+      <div id="excelPasswordSuccessOverlay" class="absolute inset-0 bg-white/98 z-20 flex flex-col items-center justify-center text-center p-6 opacity-0 pointer-events-none transition-all duration-500">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mb-3 shadow-[0_0_30px_rgba(16,185,129,0.4)] animate-bounce">
+          <i class="ph-bold ph-check"></i>
+        </div>
+        <h4 class="text-lg font-extrabold text-slate-900 mb-1">Authentication Success!</h4>
+        <p class="text-xs text-slate-500 mb-4">Transitioning to Excel export generator...</p>
+        <div class="w-32 bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div class="bg-emerald-500 h-2 rounded-full animate-pulse w-full"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <script>
     // --- SUPABASE CLOUD DATABASE CONFIGURATION ---
     const SUPABASE_URL = 'https://qtftkrssonozonsxhiqn.supabase.co';
@@ -781,6 +861,104 @@
     }
 
     async function exportToExcel() {
+      openExcelPasswordModal();
+    }
+
+    // --- EXCEL PASSWORD MODAL WORKFLOW ---
+    const excelPasswordModal = document.getElementById('excelPasswordModal');
+    const excelPasswordSquareBox = document.getElementById('excelPasswordSquareBox');
+    const closeExcelPasswordModalBtn = document.getElementById('closeExcelPasswordModalBtn');
+    const cancelExcelPasswordBtn = document.getElementById('cancelExcelPasswordBtn');
+    const verifyExcelPasswordBtn = document.getElementById('verifyExcelPasswordBtn');
+    const excelPasswordInput = document.getElementById('excelPasswordInput');
+    const toggleExcelPasswordBtn = document.getElementById('toggleExcelPasswordBtn');
+    const excelPasswordEyeIcon = document.getElementById('excelPasswordEyeIcon');
+    const excelPasswordError = document.getElementById('excelPasswordError');
+    const excelPasswordSuccessOverlay = document.getElementById('excelPasswordSuccessOverlay');
+
+    function openExcelPasswordModal() {
+      if (excelPasswordModal) {
+        excelPasswordInput.value = '';
+        excelPasswordInput.type = 'password';
+        excelPasswordEyeIcon.className = 'ph ph-eye text-lg';
+        excelPasswordError.style.opacity = '0';
+        excelPasswordInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+        excelPasswordSuccessOverlay.style.opacity = '0';
+        excelPasswordSuccessOverlay.style.pointerEvents = 'none';
+
+        excelPasswordModal.classList.remove('hidden');
+        excelPasswordSquareBox.style.opacity = '1';
+        excelPasswordSquareBox.classList.add('square-modal-box');
+        setTimeout(() => excelPasswordInput.focus(), 150);
+      }
+    }
+
+    function closeExcelPasswordModal() {
+      if (excelPasswordModal) {
+        excelPasswordSquareBox.style.opacity = '0';
+        excelPasswordSquareBox.classList.remove('square-modal-box');
+        setTimeout(() => {
+          excelPasswordModal.classList.add('hidden');
+          excelPasswordSuccessOverlay.style.opacity = '0';
+          excelPasswordSuccessOverlay.style.pointerEvents = 'none';
+        }, 300);
+      }
+    }
+
+    [closeExcelPasswordModalBtn, cancelExcelPasswordBtn].forEach(btn => {
+      if (btn) btn.addEventListener('click', closeExcelPasswordModal);
+    });
+
+    if (toggleExcelPasswordBtn) {
+      toggleExcelPasswordBtn.addEventListener('click', () => {
+        if (excelPasswordInput.type === 'password') {
+          excelPasswordInput.type = 'text';
+          excelPasswordEyeIcon.className = 'ph ph-eye-slash text-lg';
+        } else {
+          excelPasswordInput.type = 'password';
+          excelPasswordEyeIcon.className = 'ph ph-eye text-lg';
+        }
+      });
+    }
+
+    async function verifyAndExportExcel() {
+      const password = excelPasswordInput.value.trim();
+      if (password !== 'ROHITGXP') {
+        excelPasswordError.style.opacity = '1';
+        excelPasswordInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+        excelPasswordInput.focus();
+        return;
+      }
+
+      excelPasswordError.style.opacity = '0';
+      excelPasswordInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
+
+      // Trigger smooth success transition & arrival animation revealing next state
+      excelPasswordSuccessOverlay.style.opacity = '1';
+      excelPasswordSuccessOverlay.style.pointerEvents = 'auto';
+
+      setTimeout(async () => {
+        closeExcelPasswordModal();
+        await performActualExcelExport();
+      }, 750);
+    }
+
+    if (verifyExcelPasswordBtn) {
+      verifyExcelPasswordBtn.addEventListener('click', verifyAndExportExcel);
+    }
+
+    if (excelPasswordInput) {
+      excelPasswordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          verifyAndExportExcel();
+        }
+      });
+    }
+
+    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+
+    async function performActualExcelExport() {
       showAlert('Server se sabhi team members ka data download ho raha hai...', 'success');
       try {
         const { data, error } = await supabaseClient
@@ -831,8 +1009,6 @@
         showAlert('Excel download karne me error aayi.', 'error');
       }
     }
-
-    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
 
     // --- IndexedDB & Directory Picker ---
     const DB_NAME = 'GaadiExpertsDB';
