@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html lang="hi" class="h-full bg-slate-50">
+<html lang="en" class="h-full bg-slate-50">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vehicle Claim & Inspection PDF Report</title>
+  <title>Vehicle PDF Finder & ZIP Maker</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png">
-  <!-- Google Fonts: Orbitron & Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- jsPDF Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- SheetJS Library for Excel Export -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- JSZip Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
@@ -70,59 +64,13 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    @keyframes silverPlatinumShine {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes lightSweep {
-      0% { transform: translateX(-100%) rotate(25deg); }
-      100% { transform: translateX(200%) rotate(25deg); }
-    }
-
-    @keyframes subtleRedGlowPulse {
-      0%, 100% { filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.35)); }
-      50% { filter: drop-shadow(0 0 35px rgba(251, 113, 133, 0.65)); }
-    }
-
     .gaadi-expert-effect {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      color: #ffffff;
-      -webkit-text-fill-color: #ffffff;
-      text-shadow: 
-        0 1px 0 #fca5a5,
-        0 2px 0 #ef4444,
-        0 3px 0 #dc2626,
-        0 4px 0 #b91c1c,
-        0 5px 0 #991b1b,
-        0 6px 10px rgba(0, 0, 0, 0.7),
-        0 0 20px rgba(239, 68, 68, 0.7);
-      display: inline-block;
-      letter-spacing: 0.05em;
-    }
-
-    .luxury-automotive-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.3rem, 6vw, 4.5rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #ffffff;
-      -webkit-text-fill-color: #ffffff;
-      text-shadow: 
-        0 1px 0 #fca5a5,
-        0 2px 0 #ef4444,
-        0 3px 0 #dc2626,
-        0 4px 0 #b91c1c,
-        0 5px 0 #991b1b,
-        0 6px 0 #7f1d1d,
-        0 7px 0 #450a0a,
-        0 8px 15px rgba(0, 0, 0, 0.85),
-        0 0 30px rgba(239, 68, 68, 0.8),
-        0 0 60px rgba(220, 38, 38, 0.4);
-      position: relative;
+      background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #3b82f6, #6366f1);
+      background-size: 300% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: simpleColorShift 6s ease infinite;
       display: inline-block;
     }
 
@@ -134,26 +82,20 @@
 
     .moving-dash-border {
       position: relative;
-      border-radius: 1.25rem;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .moving-dash-border:hover {
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 25px var(--theme-glow);
+      border-radius: 1rem;
+      background: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
     .moving-dash-border::before {
       content: '';
       position: absolute;
       inset: -3px;
-      border-radius: 1.4rem;
-      border: 2px dashed transparent;
-      background: linear-gradient(90deg, var(--theme-color), var(--theme-glow), var(--theme-color));
-      background-size: 300% 300%;
+      border-radius: 1.15rem;
+      border: 3px dashed transparent;
+      background: linear-gradient(90deg, #ff4d4d, #ffdf00, #00ffcc, #3b82f6, #9333ea, #ff4d4d);
+      background-size: 400% 400%;
       z-index: -1;
-      animation: borderDashFlow 12s linear infinite;
-      opacity: 0.45;
+      animation: borderDashFlow 4s linear infinite;
     }
 
     .hover-dash {
@@ -166,791 +108,114 @@
     }
 
     .filled-glow {
-      font-weight: 600 !important;
-      color: #0f172a !important;
-      border: 2px solid var(--theme-color) !important;
-      box-shadow: 0 0 15px var(--theme-glow), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
-      background-color: #ffffff !important;
-    }
-
-    .invalid-glow {
-      border: 2px solid #f43f5e !important;
-      box-shadow: 0 0 20px rgba(244, 63, 94, 0.65), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
-      background-color: #fff1f2 !important;
-      color: #9f1239 !important;
-    }
-
-    /* Custom Theme Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f8fafc;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--theme-color);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--theme-color);
-      opacity: 0.85;
-    }
-
-    /* Simple White Dropdown styling */
-    select {
-      background-color: #ffffff !important;
-      color: #1e293b !important;
-    }
-    #themeSelector {
-      background-color: transparent !important;
-      color: #ffffff !important;
-    }
-    #themeSelector option {
-      background-color: #ffffff !important;
-      color: #1e293b !important;
-    }
-    select option {
-      background-color: #ffffff !important;
-      color: #1e293b !important;
-      padding: 8px 12px;
-    }
-    select option:hover, select option:checked, select option:focus {
-      background-color: #f1f5f9 !important;
-      color: #0f172a !important;
-    }
-    select option:disabled {
-      color: #cbd5e1 !important;
-      background-color: #f8fafc !important;
-      font-style: italic !important;
-    }
-
-    @keyframes textShine {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes metallicShine {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes introZoomIn {
-      0% { opacity: 0; transform: scale(0.92) translateY(15px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .intro-container {
-      animation: introZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      font-weight: 500 !important;
+      border-color: var(--theme-color) !important;
+      box-shadow: 0 0 10px var(--theme-glow), inset 0 0 4px var(--theme-glow) !important;
+      background-color: var(--theme-bg) !important;
     }
   </style>
 </head>
 <body class="min-h-full flex flex-col text-slate-800 pb-28">
 
-  <!-- Full Screen Landing Intro Animation -->
-  <div id="welcomeModal" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#030712] text-white px-4 transition-all duration-700 overflow-hidden">
-    <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-rose-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse"></div>
-    <div class="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-red-600/15 rounded-full blur-[160px] pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
-    
-    <div class="relative z-10 max-w-4xl w-full mx-auto text-center flex flex-col items-center intro-container">
-      <div class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-slate-950/90 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-semibold tracking-widest uppercase mb-8 shadow-[0_0_30px_rgba(244,63,94,0.25)] backdrop-blur-md">
-        <i class="ph-fill ph-sparkle text-rose-400 animate-spin"></i>
-        <span>Automotive Technology & Corporate Intro</span>
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mb-5">
-        <div class="p-3 rounded-2xl bg-slate-900/90 border border-rose-500/40 shadow-[0_0_30px_rgba(244,63,94,0.4)] backdrop-blur-md flex items-center justify-center transition-transform hover:scale-105 duration-300">
-          <img src="favicon.png" alt="Gaadi Experts Favicon" class="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_15px_rgba(244,63,94,0.8)]" onerror="this.style.display='none';">
-        </div>
-        <h1 class="luxury-automotive-title">GAADI EXPERTS</h1>
-      </div>
-
-      <p class="text-rose-200/90 text-sm sm:text-base font-medium tracking-wide mb-6">
-        Vehicle Claim PDF Generator & Professional Inspection Report
-      </p>
-
-      <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed tracking-wide">
-        Welcome to Gaadi Experts Page. Loading advanced automotive diagnostic suite...
-      </p>
-    </div>
-  </div>
-
   <!-- Header -->
   <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-700 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-3 py-3 sm:px-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-      <div class="flex items-center gap-3 shrink-0">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
         <div>
-          <div class="flex items-center gap-2.5">
-            <i class="ph-fill ph-car-profile text-indigo-400 text-2xl"></i>
+          <div class="flex items-center gap-3">
+            <img src="favicon.png" alt="Favicon" class="w-10 h-10 rounded-full object-cover shrink-0 shadow-md border border-indigo-500/50" onerror="this.onerror=null; this.style.display='none';">
             <span class="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase gaadi-expert-effect">GAADI EXPERTS</span>
           </div>
-          <p class="text-xs text-indigo-200 font-medium">Vehicle Claim PDF Generator & Inspection Report</p>
+          <p class="text-xs text-indigo-200 font-medium">Vehicle PDF Finder & ZIP Maker</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-start xl:justify-end">
-        <!-- Folder Selector Button -->
-        <button id="folderSelectBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Select Download Folder for all PDFs">
-          <i class="ph ph-folder-open text-base text-indigo-200"></i>
-          <span id="folderNameDisplay" class="truncate max-w-[90px] sm:max-w-[120px]">PDF'S</span>
-        </button>
-
-        <!-- Export Excel Button -->
-        <button id="exportExcelBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-emerald-500 shadow-sm cursor-pointer shrink-0" title="Export all submitted records from cloud to Excel">
-          <i class="ph-bold ph-file-xls text-base"></i>
-          <span class="hidden md:inline">Export Excel</span>
-          <span class="md:hidden">Excel</span>
-          <span id="excelBadgeCount" class="bg-emerald-900/60 text-[11px] px-1.5 py-0.5 rounded-full font-bold ml-0.5">...</span>
-        </button>
-
-        <!-- ZIP Button -->
-        <a href="Vehicle_PDF_Finder_ZIP_Maker.html" id="zipMakerBtn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-amber-500 shadow-sm cursor-pointer shrink-0" title="ZIP Maker">
-          <i class="ph ph-file-zip text-base"></i>
-          <span>ZIP</span>
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
+        <!-- Home Button -->
+        <a href="index.html" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-900 text-white px-3 py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer" title="Go to Index Page">
+          <i class="ph ph-house text-base text-indigo-200"></i>
+          <span>Home</span>
         </a>
 
         <!-- Theme Selector -->
-        <div class="inline-flex items-center gap-1 bg-indigo-800 text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-indigo-700 shadow-sm shrink-0">
-          <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden lg:inline">Theme:</label>
+        <div class="inline-flex items-center gap-1.5 bg-indigo-800 text-white px-3 py-2 rounded-xl border border-indigo-700 shadow-sm">
+          <label for="themeSelector" class="text-xs text-indigo-200 font-medium hidden md:inline">Theme:</label>
           <select id="themeSelector" onchange="switchTheme(this.value)" class="bg-transparent text-white text-xs sm:text-sm outline-none cursor-pointer transition">
-            <option value="indigo">Indigo</option>
-            <option value="emerald">Emerald</option>
-            <option value="blue">Blue</option>
-            <option value="rose">Rose</option>
-            <option value="amber">Amber</option>
-            <option value="slate">Slate</option>
+            <option value="indigo">Indigo (Default)</option>
+            <option value="emerald">Emerald Green</option>
+            <option value="blue">Royal Blue</option>
+            <option value="rose">Crimson Rose</option>
+            <option value="amber">Amber Gold</option>
+            <option value="slate">Dark Slate</option>
           </select>
         </div>
-
-        <!-- Reset Form Button -->
-        <button id="resetBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-rose-600 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Reset Form">
-          <i class="ph ph-arrow-counter-clockwise text-base"></i>
-          <span class="hidden md:inline">Reset Form</span>
-          <span class="md:hidden">Reset</span>
-        </button>
-
-        <!-- Restore Data Button -->
-        <button id="restoreBtn" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-800 hover:bg-emerald-600 text-white px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl font-medium transition duration-200 border border-indigo-700 shadow-sm cursor-pointer shrink-0" title="Restore Previously Filled Data">
-          <i class="ph ph-clock-counter-clockwise text-base"></i>
-          <span class="hidden md:inline">Restore Data</span>
-          <span class="md:hidden">Restore</span>
-        </button>
       </div>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-    <form id="reportForm" class="space-y-8" onsubmit="event.preventDefault();">
-      
-      <!-- Top Grid: Form Details -->
-      <div class="moving-dash-border p-6 sm:p-10 transition-all">
-        <div class="flex items-center justify-between pb-5 mb-8 border-b border-slate-200/80 bg-gradient-to-r from-slate-50/80 via-indigo-50/30 to-transparent -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 p-6 sm:px-10 rounded-t-[1.25rem]">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <i class="ph-fill ph-car-profile text-2xl"></i>
-            </div>
-            <div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Vehicle & Claim Information</h2>
-              <p class="text-xs sm:text-sm text-slate-500 font-medium">Enter accurate vehicle details and claim reference data</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold px-3 py-1.5 bg-indigo-100/80 text-indigo-800 rounded-xl border border-indigo-200 shadow-sm">Page 1 Details</span>
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Section 1: Select your PDF folder -->
+    <div class="moving-dash-border p-6 sm:p-8 transition-all">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="ph-fill ph-folder-open text-indigo-600 text-xl"></i>
+            1. Select your PDF folder
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Choose the folder containing your vehicle PDFs. Files are processed in your browser; they are not uploaded to a server.</p>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <!-- Claim Number -->
-          <div>
-            <label for="claimNumber" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Claim Number <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="claimNumber" list="claimNumberList" required placeholder="e.g. CLM-2024-9842" 
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="claimNumberList"></datalist>
-          </div>
-
-          <!-- Vehicle Number -->
-          <div>
-            <label for="vehicleNumber" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Vehicle Number <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="vehicleNumber" list="vehicleNumberList" required placeholder="e.g. DL 01 AB 1234" 
-              class="w-full uppercase font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="vehicleNumberList"></datalist>
-          </div>
-
-          <!-- Insurance Company -->
-          <div>
-            <label for="insuranceCompany" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Insurance Company <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="insuranceCompany" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Insurance Company</option>
-              <option value="Acko">Acko</option>
-              <option value="Cholamandalam">Cholamandalam</option>
-              <option value="Edelweiss">Edelweiss</option>
-              <option value="Iffco Tokio">Iffco Tokio</option>
-              <option value="Kotak">Kotak</option>
-              <option value="Liberty">Liberty</option>
-              <option value="Magma">Magma</option>
-              <option value="National">National</option>
-              <option value="Royal Sundaram">Royal Sundaram</option>
-              <option value="Raheja QBE">Raheja QBE</option>
-              <option value="Shriram">Shriram</option>
-              <option value="Surveyor & Loss Assessor">Surveyor & Loss Assessor</option>
-              <option value="Tata AIG">Tata AIG</option>
-              <option value="Bajaj">Bajaj</option>
-              <option value="New India">New India</option>
-              <option value="Universal Sompo">Universal Sompo</option>
-            </select>
-          </div>
-
-          <!-- Make -->
-          <div>
-            <label for="vehicleMake" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Make <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="vehicleMake" list="vehicleMakeList" required placeholder="e.g. Hyundai" 
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="vehicleMakeList"></datalist>
-          </div>
-
-          <!-- Model -->
-          <div>
-            <label for="vehicleModel" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Model <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="vehicleModel" list="vehicleModelList" required placeholder="e.g. Creta" 
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="vehicleModelList"></datalist>
-          </div>
-
-          <!-- Variant -->
-          <div>
-            <label for="vehicleVariant" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Variant <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="vehicleVariant" list="vehicleVariantList" required placeholder="e.g. SX" 
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="vehicleVariantList"></datalist>
-          </div>
-
-          <!-- Manufacturing Year -->
-          <div>
-            <label for="mfgDate" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Manufacturing Year <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="mfgDate" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Manufacturing Year</option>
-              <option value="2030">2030</option>
-              <option value="2029">2029</option>
-              <option value="2028">2028</option>
-              <option value="2027">2027</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
-              <option value="2018">2018</option>
-              <option value="2017">2017</option>
-              <option value="2016">2016</option>
-              <option value="2015">2015</option>
-              <option value="2014">2014</option>
-              <option value="2013">2013</option>
-              <option value="2012">2012</option>
-              <option value="2011">2011</option>
-              <option value="2010">2010</option>
-              <option value="2009">2009</option>
-              <option value="2008">2008</option>
-              <option value="2007">2007</option>
-              <option value="2006">2006</option>
-              <option value="2005">2005</option>
-              <option value="2004">2004</option>
-              <option value="2003">2003</option>
-              <option value="2002">2002</option>
-              <option value="2001">2001</option>
-              <option value="2000">2000</option>
-            </select>
-          </div>
-
-          <!-- Registration Year -->
-          <div>
-            <label for="regYear" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Registration Year <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="regYear" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Registration Year</option>
-              <option value="2030">2030</option>
-              <option value="2029">2029</option>
-              <option value="2028">2028</option>
-              <option value="2027">2027</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
-              <option value="2018">2018</option>
-              <option value="2017">2017</option>
-              <option value="2016">2016</option>
-              <option value="2015">2015</option>
-              <option value="2014">2014</option>
-              <option value="2013">2013</option>
-              <option value="2012">2012</option>
-              <option value="2011">2011</option>
-              <option value="2010">2010</option>
-              <option value="2009">2009</option>
-              <option value="2008">2008</option>
-              <option value="2007">2007</option>
-              <option value="2006">2006</option>
-              <option value="2005">2005</option>
-              <option value="2004">2004</option>
-              <option value="2003">2003</option>
-              <option value="2002">2002</option>
-              <option value="2001">2001</option>
-              <option value="2000">2000</option>
-            </select>
-          </div>
-
-          <!-- Quote Type -->
-          <div>
-            <label for="quoteType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Quote Type <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="quoteType" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Quote Type</option>
-              <option value="WITH RC">WITH RC</option>
-              <option value="WITHOUT RC">WITHOUT RC</option>
-              <option value="BOTH">BOTH</option>
-            </select>
-          </div>
-
-          <!-- Fuel Type -->
-          <div>
-            <label for="fuelType" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Fuel Type <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="fuelType" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Fuel Type</option>
-              <option value="CNG">CNG</option>
-              <option value="Diesel">Diesel</option>
-              <option value="DIESEL HYBRID">DIESEL HYBRID</option>
-              <option value="Electric">Electric</option>
-              <option value="Strong Hybrid (EV)">Strong Hybrid (EV)</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="LPG">LPG</option>
-              <option value="PETROL/CNG">PETROL/CNG</option>
-              <option value="Diesel + Hybrid (Smart Hybrid)">Diesel + Hybrid (Smart Hybrid)</option>
-              <option value="PETROL HYBRID">PETROL HYBRID</option>
-              <option value="Ethenol/Petrol">Ethenol/Petrol</option>
-              <option value="Petrol + E20">Petrol + E20</option>
-              <option value="Petrol + Hybrid (Smart Hybrid)">Petrol + Hybrid (Smart Hybrid)</option>
-              <option value="PETROL/LPG">PETROL/LPG</option>
-              <option value="PETROL(E20)/CNG">PETROL(E20)/CNG</option>
-              <option value="PETROL+E20/HYBRID">PETROL+E20/HYBRID</option>
-            </select>
-          </div>
-
-          <!-- Ownership -->
-          <div>
-            <label for="ownership" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Ownership <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <select id="ownership" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
-              <option value="">Select Ownership</option>
-              <option value="1st Owner">1st Owner</option>
-              <option value="2nd Owner">2nd Owner</option>
-              <option value="3rd Owner">3rd Owner</option>
-              <option value="4th Owner">4th Owner</option>
-              <option value="5th Owner">5th Owner</option>
-              <option value="6th Owner">6th Owner</option>
-              <option value="7th Owner">7th Owner</option>
-              <option value="8th Owner">8th Owner</option>
-              <option value="9th Owner">9th Owner</option>
-              <option value="Not Applicable">Not Applicable</option>
-            </select>
-          </div>
-
-          <!-- Location -->
-          <div class="sm:col-span-2 lg:col-span-3">
-            <label for="location" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Location / Address <span class="text-rose-500 font-bold">*</span>
-            </label>
-            <input type="text" id="location" list="locationList" required placeholder="e.g. Workshop / Dealership Address with Pin code & City" 
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-            <datalist id="locationList"></datalist>
-          </div>
-
-          <!-- Vehicle Photos Upload -->
-          <div class="sm:col-span-2 lg:col-span-3 pt-3 border-t border-slate-100 mt-2">
-            <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                Vehicle Photos Upload <span class="text-rose-500 font-bold">*</span>
-              </label>
-              <span id="imageCounter" class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
-                0 photos selected
-              </span>
-            </div>
-
-            <div class="flex flex-col sm:flex-row items-center gap-3">
-              <div id="dropZone" class="flex-1 w-full border border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/30 hover:bg-indigo-50/60 rounded-xl p-3 text-center cursor-pointer transition flex items-center gap-3">
-                <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-                <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
-                  <i class="ph ph-camera text-lg"></i>
-                </div>
-                <div class="text-left truncate">
-                  <p class="text-xs font-semibold text-slate-800 truncate">Click karke photos choose karein ya yahan Drag & Drop karein</p>
-                  <p class="text-[11px] text-slate-500">Multiple images (JPG, PNG, WebP)</p>
-                </div>
-              </div>
-
-              <button type="button" onclick="document.getElementById('fileInput').click()" class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition cursor-pointer shrink-0">
-                <i class="ph ph-plus text-sm font-bold"></i>
-                Add Photo +
-              </button>
-            </div>
-
-            <!-- Image Previews Container -->
-            <div id="previewSection" class="mt-4 hidden">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold text-slate-700">Selected Photos Preview:</span>
-                <button id="clearAllImagesBtn" type="button" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
-                  <i class="ph ph-trash"></i> Remove All
-                </button>
-              </div>
-              <div id="thumbnailsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
-            </div>
-          </div>
-        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 hidden sm:inline">Step 1</span>
       </div>
 
-      <!-- Action & Generation Area (Sticky Bottom Bar) -->
-      <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-3 px-4 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div class="hidden sm:block text-xs text-slate-500">
-            PDF Name: <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono font-semibold">[Vehicle_Number]_[Make_and_Model].pdf</code>
-          </div>
-          
-          <div id="statusAlert" class="hidden w-full sm:w-auto p-2.5 rounded-xl text-xs sm:text-sm font-medium"></div>
+      <div class="space-y-4">
+        <input id="folderInput" type="file" webkitdirectory directory multiple accept=".pdf,application/pdf" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white cursor-pointer">
+        <div id="folderStatus" class="p-3 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-700 border border-slate-200">No folder selected yet.</div>
+      </div>
+    </div>
 
-          <button id="generatePdfBtn" type="button" 
-            class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 flex items-center justify-center gap-2.5 text-sm sm:text-base transition-all duration-200">
-            <i class="ph-bold ph-file-arrow-down text-xl"></i>
-            <span>Generate & Download PDF</span>
-          </button>
+    <!-- Section 2: Add recipients and vehicle numbers -->
+    <div class="moving-dash-border p-6 sm:p-8 transition-all">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="ph-fill ph-users text-indigo-600 text-xl"></i>
+            2. Add recipients and vehicle numbers
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">For each person, enter a name and paste vehicle numbers. Use one number per line, or separate them with commas/spaces. Example: KL06F5207</p>
         </div>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 hidden sm:inline">Step 2</span>
       </div>
 
-    </form>
+      <div id="groups" class="space-y-4"></div>
+
+      <div class="flex flex-wrap items-center gap-3 mt-6 pt-4 border-t border-slate-100">
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2.5 rounded-xl font-bold transition border border-indigo-200 shadow-sm cursor-pointer" id="addGroup">
+          <i class="ph ph-plus text-base"></i>
+          <span>Add another recipient</span>
+        </button>
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-200 cursor-pointer" id="makeZips">
+          <i class="ph-bold ph-file-zip text-base"></i>
+          <span>Find PDFs & create ZIPs</span>
+        </button>
+        <button type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-emerald-200 cursor-pointer" id="downloadAll" disabled>
+          <i class="ph-bold ph-download-simple text-base"></i>
+          <span>Download all ZIPs together</span>
+        </button>
+      </div>
+
+      <div id="mainStatus" class="p-3 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-700 border border-slate-200 mt-4">Select a folder and add at least one recipient to begin.</div>
+      <div id="results" class="results space-y-4 mt-4"></div>
+    </div>
+
   </main>
 
-  <!-- Progress / Loading Modal -->
-  <div id="loadingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl">
-      <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-      <h3 class="text-lg font-bold text-slate-800 mb-1">Generating PDF...</h3>
-      <p id="loadingStatusText" class="text-sm text-slate-500 mb-4">Photos process ki ja rahi hain, please wait...</p>
-      <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-        <div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 15%"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Preview Modal -->
-  <div id="previewModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-7xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <div>
-          <h3 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
-            <i class="ph-fill ph-eye text-indigo-600 text-2xl"></i>
-            Report Preview (Details & Photos)
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-500">Left side filled details hain aur right side large uploaded photos (RC details match karne ke liye)</p>
-        </div>
-        <button id="closePreviewBtn" type="button" class="w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition">
-          <i class="ph ph-x text-xl font-bold"></i>
-        </button>
-      </div>
-
-      <div class="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-4 p-4 sm:p-6 bg-slate-50/50">
-        <div class="md:col-span-4 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col overflow-y-auto max-h-[75vh] md:max-h-[82vh]">
-          <h4 class="text-sm sm:text-base font-bold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
-            <i class="ph-fill ph-car-profile text-indigo-600 text-lg"></i>
-            Filled Vehicle & Claim Details
-          </h4>
-          <div id="previewDetailsList" class="space-y-2 text-xs sm:text-sm pr-1"></div>
-        </div>
-
-        <div class="md:col-span-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col">
-          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
-            <h4 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
-              <i class="ph-fill ph-images text-indigo-600 text-lg"></i>
-              Uploaded Photos (<span id="previewPhotoCount">0</span>) - Large View for RC Matching
-            </h4>
-            <span class="text-xs text-indigo-600 font-semibold">Scroll down to check all photos</span>
-          </div>
-          <div id="previewPhotosScrollContainer" class="flex-1 overflow-y-auto max-h-[72vh] md:max-h-[80vh] space-y-6 pr-2"></div>
-        </div>
-      </div>
-
-      <div class="px-6 py-4 border-t border-slate-200 bg-white flex items-center justify-end gap-3">
-        <button id="cancelPreviewBtn" type="button" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 text-sm transition">
-          Back to Edit
-        </button>
-        <button id="confirmDownloadBtn" type="button" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 flex items-center gap-2 text-sm transition">
-          <i class="ph-bold ph-file-arrow-down text-lg"></i>
-          Confirm & Download PDF
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Success Popup Modal -->
-  <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl transform transition-all">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-        <i class="ph-bold ph-check"></i>
-      </div>
-      <h3 class="text-xl font-bold text-slate-800 mb-2">PDF Downloaded Successfully!</h3>
-      <p id="successModalText" class="text-xs sm:text-sm text-slate-500 mb-6 font-mono"></p>
-      <button id="closeSuccessModalBtn" type="button" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition cursor-pointer">
-        OK / Done
-      </button>
-    </div>
-  </div>
-
-  <!-- Date Conflict Modal -->
-  <div id="dateConflictModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl transform transition-all">
-      <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-        <i class="ph-bold ph-warning"></i>
-      </div>
-      <h3 class="text-xl font-bold text-slate-800 mb-2">Manufacturing Date Error</h3>
-      <p id="dateConflictText" class="text-xs sm:text-sm text-slate-600 mb-6">Manufacturing Year (<span id="conflictMfg" class="font-bold text-rose-600"></span>) Registration Year (<span id="conflictReg" class="font-bold text-slate-800"></span>) se zyada nahi ho sakti! Kya aap fir bhi proceed karna chahte hain?</p>
-      <div class="flex gap-3">
-        <button id="dateConflictNoBtn" type="button" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl transition cursor-pointer text-xs sm:text-sm">
-          No (Registration Date theek karein)
-        </button>
-        <button id="dateConflictYesBtn" type="button" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition cursor-pointer text-xs sm:text-sm">
-          Yes (Proceed karein)
-        </button>
-      </div>
-    </div>
-  </div>
+  <footer class="text-center text-xs text-indigo-200/80 py-6">
+    Works best in current Google Chrome or Microsoft Edge. Keep this page open until ZIP creation and downloads finish.
+  </footer>
 
   <script>
-    // --- SUPABASE CLOUD DATABASE CONFIGURATION ---
-    const SUPABASE_URL = 'https://qtftkrssonozonsxhiqn.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_bUvA4RRkBVqs8hq5o8_XNg_DOSfV7fY';
-    const TABLE_NAME = 'vehicle_inspections_v2';
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    async function updateExcelBadge() {
-      try {
-        const { count, error } = await supabaseClient
-          .from(TABLE_NAME)
-          .select('*', { count: 'exact', head: true });
-        
-        if (!error && count !== null) {
-          const badge = document.getElementById('excelBadgeCount');
-          if (badge) badge.textContent = count;
-        }
-      } catch (err) {
-        console.warn('Could not fetch cloud count:', err);
-      }
-    }
-
-    async function saveRecordToDatabase(recordData) {
-      try {
-        const { error } = await supabaseClient
-          .from(TABLE_NAME)
-          .insert([recordData]);
-
-        if (error) {
-          console.error('Supabase Save Error:', error.message);
-        } else {
-          updateExcelBadge();
-        }
-      } catch (err) {
-        console.error('Cloud Sync Failed:', err);
-      }
-    }
-
-    async function exportToExcel() {
-      showAlert('Server se sabhi team members ka data download ho raha hai...', 'success');
-      try {
-        const { data, error } = await supabaseClient
-          .from(TABLE_NAME)
-          .select('*')
-          .order('id', { ascending: false });
-
-        if (error || !data || data.length === 0) {
-          showAlert('Database me abhi koi data nahi mila.', 'error');
-          return;
-        }
-
-        const formattedData = data.map((item, index) => ({
-          "S.No": index + 1,
-          "Date & Time": item.created_at ? new Date(item.created_at).toLocaleString('en-IN') : '',
-          "Claim Number": item.claim_number || '',
-          "Vehicle Number": item.vehicle_number || '',
-          "Insurance Company": item.insurance_company || '',
-          "Make": item.make || '',
-          "Model": item.model || '',
-          "Variant": item.variant || '',
-          "Manufacturing Year": item.mfg_year || '',
-          "Registration Year": item.reg_year || '',
-          "Quote Type": item.quote_type || '',
-          "Fuel Type": item.fuel_type || '',
-          "Ownership": item.ownership || '',
-          "Location": item.location || '',
-          "Photos Count": item.photos_count || (item.photos ? item.photos.length : 0)
-        }));
-
-        const ws = XLSX.utils.json_to_sheet(formattedData);
-        ws['!cols'] = [
-          { wch: 6 }, { wch: 20 }, { wch: 18 }, { wch: 16 }, { wch: 22 },
-          { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 18 }, { wch: 18 },
-          { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 45 }, { wch: 14 }
-        ];
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'All Team Reports');
-
-        const dateStr = new Date().toISOString().slice(0, 10);
-        const filename = `Gaadi_Experts_All_Records_${dateStr}.xlsx`;
-
-        XLSX.writeFile(wb, filename);
-        showAlert(`Sabhi ${data.length} records ki Excel file download ho gayi!`, 'success');
-      } catch (err) {
-        console.error('Export Error:', err);
-        showAlert('Excel download karne me error aayi.', 'error');
-      }
-    }
-
-    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-
-    // --- IndexedDB & Directory Picker ---
-    const DB_NAME = 'GaadiExpertsDB';
-    const STORE_NAME = 'settings';
-    const KEY_HANDLE = 'downloadDirHandle';
-
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains(STORE_NAME)) {
-            db.createObjectStore(STORE_NAME);
-          }
-        };
-        request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e.target.error);
-      });
-    }
-
-    async function saveDirHandle(handle) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
-        store.put(handle, KEY_HANDLE);
-        tx.oncomplete = () => resolve(true);
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function getDirHandle() {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.get(KEY_HANDLE);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    let savedDirectoryHandle = null;
-
-    async function initFolderSelection() {
-      try {
-        savedDirectoryHandle = await getDirHandle();
-        if (savedDirectoryHandle) {
-          updateFolderDisplay(savedDirectoryHandle.name);
-        }
-      } catch (err) {
-        console.error('Error loading saved directory handle:', err);
-      }
-    }
-
-    function updateFolderDisplay(name) {
-      const display = document.getElementById('folderNameDisplay');
-      if (display) {
-        display.textContent = name ? `📁 ${name}` : 'Set Folder';
-      }
-    }
-
-    // --- AUTOCOMPLETE SYSTEM ---
-    const suggestionFields = ['claimNumber', 'vehicleNumber', 'vehicleMake', 'vehicleModel', 'vehicleVariant', 'location'];
-
-    function loadSuggestions() {
-      suggestionFields.forEach(fieldId => {
-        const input = document.getElementById(fieldId);
-        const datalist = document.getElementById(fieldId + 'List');
-        if (!input || !datalist) return;
-
-        // Ensure datalist is empty initially so dropdown doesn't show on focus/click before typing
-        datalist.innerHTML = '';
-
-        input.addEventListener('input', () => {
-          const query = input.value.trim().toLowerCase();
-          if (!query) {
-            datalist.innerHTML = '';
-            return;
-          }
-          try {
-            const saved = JSON.parse(localStorage.getItem('gaadi_suggestions_' + fieldId) || '[]');
-            const filtered = saved.filter(val => val.toLowerCase().includes(query));
-            datalist.innerHTML = filtered.map(val => `<option value="${val}">`).join('');
-          } catch (e) {
-            console.error('Error filtering suggestions for ' + fieldId, e);
-          }
-        });
-
-        input.addEventListener('focus', () => {
-          const query = input.value.trim().toLowerCase();
-          if (!query) {
-            datalist.innerHTML = '';
-          }
-        });
-      });
-    }
-
-    function saveSuggestion(fieldId, value) {
-      if (!value || !value.trim()) return;
-      const val = value.trim();
-      try {
-        const key = 'gaadi_suggestions_' + fieldId;
-        let saved = JSON.parse(localStorage.getItem(key) || '[]');
-        if (!saved.includes(val)) {
-          saved.unshift(val);
-          if (saved.length > 50) saved = saved.slice(0, 50);
-          localStorage.setItem(key, JSON.stringify(saved));
-        }
-      } catch (e) {
-        console.error('Error saving suggestion for ' + fieldId, e);
-      }
-    }
-
+    // Theme Switcher Function
     function switchTheme(newTheme, save = true) {
       document.body.setAttribute('data-theme', newTheme);
       const themes = ['indigo', 'emerald', 'blue', 'rose', 'amber', 'slate'];
@@ -975,1046 +240,213 @@
       if (themeSelector) themeSelector.value = newTheme;
     }
 
-    function updateFieldGlow(el) {
-      if (el.value && el.value.trim() !== '') {
-        el.classList.add('filled-glow');
-      } else {
-        el.classList.remove('filled-glow');
-      }
-    }
-
-    function validateDates() {
-      const mfgEl = document.getElementById('mfgDate');
-      const regEl = document.getElementById('regYear');
-      const mfgVal = parseInt(mfgEl.value);
-      const regVal = parseInt(regEl.value);
-
-      if (!isNaN(mfgVal)) {
-        Array.from(regEl.options).forEach(opt => {
-          if (opt.value && !isNaN(parseInt(opt.value))) {
-            if (parseInt(opt.value) < mfgVal) {
-              opt.disabled = true;
-              opt.style.color = '#cbd5e1';
-              opt.style.backgroundColor = '#f8fafc';
-              opt.style.fontStyle = 'italic';
-            } else {
-              opt.disabled = false;
-              opt.style.color = '';
-              opt.style.backgroundColor = '';
-              opt.style.fontStyle = '';
-            }
-          }
-        });
-        if (!isNaN(regVal) && regVal < mfgVal) {
-          regEl.value = '';
-          updateFieldGlow(regEl);
-        }
-      } else {
-        Array.from(regEl.options).forEach(opt => {
-          opt.disabled = false;
-          opt.style.color = '';
-          opt.style.backgroundColor = '';
-          opt.style.fontStyle = '';
-        });
-      }
-
-      if (!isNaN(regVal)) {
-        Array.from(mfgEl.options).forEach(opt => {
-          if (opt.value && !isNaN(parseInt(opt.value))) {
-            if (parseInt(opt.value) > regVal) {
-              opt.disabled = true;
-              opt.style.color = '#cbd5e1';
-              opt.style.backgroundColor = '#f8fafc';
-              opt.style.fontStyle = 'italic';
-            } else {
-              opt.disabled = false;
-              opt.style.color = '';
-              opt.style.backgroundColor = '';
-              opt.style.fontStyle = '';
-            }
-          }
-        });
-        if (!isNaN(mfgVal) && mfgVal > regVal) {
-          mfgEl.value = '';
-          updateFieldGlow(mfgEl);
-        }
-      } else {
-        Array.from(mfgEl.options).forEach(opt => {
-          opt.disabled = false;
-          opt.style.color = '';
-          opt.style.backgroundColor = '';
-          opt.style.fontStyle = '';
-        });
-      }
-
-      if (!isNaN(mfgVal) && !isNaN(regVal)) {
-        if (regVal < mfgVal) {
-          regEl.classList.add('invalid-glow');
-          regEl.classList.remove('filled-glow');
-        } else {
-          regEl.classList.remove('invalid-glow');
-          updateFieldGlow(regEl);
-        }
-      } else {
-        regEl.classList.remove('invalid-glow');
-        updateFieldGlow(regEl);
-      }
-    }
-
-    function closeWelcomeModal() {
-      const modal = document.getElementById('welcomeModal');
-      if (modal) {
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          modal.style.display = 'none';
-        }, 700);
-      }
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('gaadi_theme') || 'indigo';
       document.body.setAttribute('data-theme', savedTheme);
       if (savedTheme !== 'indigo') {
         switchTheme(savedTheme, false);
       }
-      initFolderSelection();
-      updateExcelBadge();
-      loadSuggestions();
-
-      setTimeout(() => {
-        closeWelcomeModal();
-      }, 2500);
-
-      const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
-      formInputs.forEach(el => {
-        el.classList.add('hover-dash');
-        updateFieldGlow(el);
-        el.addEventListener('input', () => updateFieldGlow(el));
-        el.addEventListener('change', () => updateFieldGlow(el));
-        el.addEventListener('blur', () => {
-          updateFieldGlow(el);
-          if (suggestionFields.includes(el.id)) {
-            saveSuggestion(el.id, el.value);
-          }
-        });
-      });
-
-      const mfgEl = document.getElementById('mfgDate');
-      const regEl = document.getElementById('regYear');
-      if (mfgEl && regEl) {
-        mfgEl.addEventListener('change', validateDates);
-        regEl.addEventListener('change', validateDates);
-        mfgEl.addEventListener('input', validateDates);
-        regEl.addEventListener('input', validateDates);
-      }
     });
 
-    // --- GRID ARROW KEY FORM NAVIGATION ---
-    document.addEventListener('keydown', (e) => {
-      const activeEl = document.activeElement;
-      if (!activeEl || !activeEl.closest('#reportForm')) return;
+    const folderInput = document.getElementById('folderInput');
+    const folderStatus = document.getElementById('folderStatus');
+    const groupsEl = document.getElementById('groups');
+    const mainStatus = document.getElementById('mainStatus');
+    const resultsEl = document.getElementById('results');
+    const downloadAllBtn = document.getElementById('downloadAll');
+    let pdfFiles = [];
+    let madeZips = [];
+    let groupCounter = 0;
 
-      const focusableElements = Array.from(document.querySelectorAll('#reportForm input:not([type="hidden"]):not([type="file"]), #reportForm select'))
-        .filter(el => !el.disabled && el.offsetParent !== null);
-      
-      const index = focusableElements.indexOf(activeEl);
-      if (index === -1) return;
+    function normalize(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+    function safeName(s) { return (s || 'Recipient').trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/\s+/g, '_').slice(0, 70) || 'Recipient'; }
 
-      let cols = 3;
-      if (window.innerWidth < 640) cols = 1;
-      else if (window.innerWidth < 1024) cols = 2;
-
-      let nextIndex = index;
-      let handled = false;
-
-      if (e.key === 'ArrowRight') {
-        if (activeEl.tagName === 'SELECT' || (activeEl.tagName === 'INPUT' && activeEl.selectionStart === activeEl.value.length)) {
-          if (index < focusableElements.length - 1) {
-            nextIndex = index + 1;
-            handled = true;
-          }
-        }
-      } else if (e.key === 'ArrowLeft') {
-        if (activeEl.tagName === 'SELECT' || (activeEl.tagName === 'INPUT' && activeEl.selectionStart === 0)) {
-          if (index > 0) {
-            nextIndex = index - 1;
-            handled = true;
-          }
-        }
-      } else if (e.key === 'ArrowDown') {
-        if (index + cols < focusableElements.length) {
-          nextIndex = index + cols;
-          handled = true;
-        } else if (index < focusableElements.length - 1 && activeEl.tagName === 'SELECT') {
-          nextIndex = index + 1;
-          handled = true;
-        }
-      } else if (e.key === 'ArrowUp') {
-        if (index - cols >= 0) {
-          nextIndex = index - cols;
-          handled = true;
-        } else if (index > 0 && activeEl.tagName === 'SELECT') {
-          nextIndex = index - 1;
-          handled = true;
-        }
-      }
-
-      if (handled) {
-        e.preventDefault();
-        focusableElements[nextIndex].focus();
-        if (focusableElements[nextIndex].tagName === 'INPUT' && focusableElements[nextIndex].type === 'text') {
-          focusableElements[nextIndex].select();
-        }
-      }
-    });
-
-    const folderSelectBtn = document.getElementById('folderSelectBtn');
-    if (folderSelectBtn) {
-      folderSelectBtn.addEventListener('click', async () => {
-        if (!window.showDirectoryPicker) {
-          showAlert('Aapka browser File System Access API support nahi karta. PDFs default browser download folder me save hongi.', 'error');
-          return;
-        }
-        try {
-          const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          if (handle) {
-            savedDirectoryHandle = handle;
-            await saveDirHandle(handle);
-            updateFolderDisplay(handle.name);
-            showAlert(`Download folder set: "${handle.name}". Ab saari PDFs isi folder me save hongi!`, 'success');
-          }
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            showAlert('Folder select karne me error aayi.', 'error');
-          }
-        }
-      });
-    }
-
-    let uploadedImages = [];
-    let draggedIndex = null;
-
-    window.handleDragStart = function(e, index) {
-      draggedIndex = index;
-      e.dataTransfer.effectAllowed = 'move';
-    };
-
-    window.handleDragOver = function(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-    };
-
-    window.handleDrop = function(e, index) {
-      e.preventDefault();
-      if (draggedIndex === null || draggedIndex === index) return;
-      const item = uploadedImages.splice(draggedIndex, 1)[0];
-      uploadedImages.splice(index, 0, item);
-      draggedIndex = null;
-      renderThumbnails();
-    };
-
-    window.moveImage = function(index, delta) {
-      const newIndex = index + delta;
-      if (newIndex < 0 || newIndex >= uploadedImages.length) return;
-      const item = uploadedImages.splice(index, 1)[0];
-      uploadedImages.splice(newIndex, 0, item);
-      renderThumbnails();
-    };
-
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const previewSection = document.getElementById('previewSection');
-    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
-    const imageCounter = document.getElementById('imageCounter');
-    const clearAllImagesBtn = document.getElementById('clearAllImagesBtn');
-    const generatePdfBtn = document.getElementById('generatePdfBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const statusAlert = document.getElementById('statusAlert');
-    const loadingModal = document.getElementById('loadingModal');
-    const loadingStatusText = document.getElementById('loadingStatusText');
-    const progressBar = document.getElementById('progressBar');
-
-    dropZone.addEventListener('click', () => fileInput.click());
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropZone.classList.add('border-indigo-600', 'bg-indigo-100/60');
-      }, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('border-indigo-600', 'bg-indigo-100/60');
-      }, false);
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      handleFiles(e.dataTransfer.files);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      handleFiles(e.target.files);
-    });
-
-    function handleFiles(files) {
-      if (!files || files.length === 0) return;
-      Array.from(files).forEach(file => {
-        if (!file.type.startsWith('image/')) {
-          showAlert('Kripya sirf image files hi upload karein.', 'error');
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          uploadedImages.push({
-            id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-            file: file,
-            dataUrl: e.target.result,
-            name: file.name
-          });
-          renderThumbnails();
-        };
-        reader.readAsDataURL(file);
-      });
-      fileInput.value = '';
-    }
-
-    function renderThumbnails() {
-      thumbnailsContainer.innerHTML = '';
-      const count = uploadedImages.length;
-      imageCounter.textContent = `${count} photo${count === 1 ? '' : 's'} selected`;
-
-      if (count === 0) {
-        previewSection.classList.add('hidden');
-        return;
-      }
-      previewSection.classList.remove('hidden');
-
-      uploadedImages.forEach((img, index) => {
-        const item = document.createElement('div');
-        item.className = 'relative group bg-slate-50 border border-slate-200 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center shadow-sm cursor-move';
-        item.setAttribute('draggable', 'true');
-        item.setAttribute('ondragstart', `handleDragStart(event, ${index})`);
-        item.setAttribute('ondragover', `handleDragOver(event)`);
-        item.setAttribute('ondrop', `handleDrop(event, ${index})`);
-
-        item.innerHTML = `
-          <img src="${img.dataUrl}" alt="Photo ${index + 1}" class="w-full h-full object-cover pointer-events-none">
-          <div class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-between p-2">
-            <div class="flex items-center justify-between w-full">
-              <span class="bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold">#${index + 1}</span>
-              <button type="button" onclick="removeImage('${img.id}')" title="Delete" class="w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-700 shadow">
-                <i class="ph ph-trash font-bold text-xs"></i>
-              </button>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button type="button" onclick="moveImage(${index}, -1)" ${index === 0 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Left" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
-                <i class="ph ph-arrow-left"></i>
-              </button>
-              <button type="button" onclick="moveImage(${index}, 1)" ${index === uploadedImages.length - 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''} title="Move Right" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow text-xs font-bold">
-                <i class="ph ph-arrow-right"></i>
-              </button>
-            </div>
-          </div>
-          <span class="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono group-hover:opacity-0 transition-opacity">
-            #${index + 1}
-          </span>
-        `;
-        thumbnailsContainer.appendChild(item);
-      });
-    }
-
-    window.removeImage = function(id) {
-      uploadedImages = uploadedImages.filter(img => img.id !== id);
-      renderThumbnails();
-    };
-
-    clearAllImagesBtn.addEventListener('click', () => {
-      uploadedImages = [];
-      renderThumbnails();
-    });
-
-    function showAlert(message, type = 'error') {
-      statusAlert.textContent = message;
-      statusAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
-      
-      if (type === 'error') {
-        statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-      } else {
-        statusAlert.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
-      }
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      setTimeout(() => { statusAlert.classList.add('hidden'); }, 5000);
-    }
-
-    resetBtn.addEventListener('click', () => {
-      document.getElementById('reportForm').reset();
-      document.querySelectorAll('#reportForm input, #reportForm select').forEach(el => {
-        el.classList.remove('filled-glow');
-      });
-      uploadedImages = [];
-      renderThumbnails();
-      statusAlert.classList.add('hidden');
-    });
-
-    function sanitizeFilename(name) {
-      return name.trim().replace(/[^a-zA-Z0-9_\-\s]/g, '').replace(/\s+/g, '_');
-    }
-
-    function loadImageElement(dataUrl) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = (e) => reject(e);
-        img.src = dataUrl;
-      });
-    }
-
-    const previewModal = document.getElementById('previewModal');
-    const closePreviewBtn = document.getElementById('closePreviewBtn');
-    const cancelPreviewBtn = document.getElementById('cancelPreviewBtn');
-    const confirmDownloadBtn = document.getElementById('confirmDownloadBtn');
-    const previewDetailsList = document.getElementById('previewDetailsList');
-    const previewPhotosScrollContainer = document.getElementById('previewPhotosScrollContainer');
-    const previewPhotoCount = document.getElementById('previewPhotoCount');
-
-    [closePreviewBtn, cancelPreviewBtn].forEach(btn => {
-      if (btn) btn.addEventListener('click', () => previewModal.classList.add('hidden'));
-    });
-
-    let imageZooms = {};
-
-    function getZoomState(idx) {
-      if (!imageZooms[idx]) {
-        imageZooms[idx] = { scale: 1, translateX: 0, translateY: 0 };
-      }
-      return imageZooms[idx];
-    }
-
-    window.zoomImage = function(idx, delta) {
-      const state = getZoomState(idx);
-      state.scale = Math.min(Math.max(1, state.scale + delta), 5);
-      if (state.scale === 1) { state.translateX = 0; state.translateY = 0; }
-      applyImageTransform(idx);
-    };
-
-    window.resetImageZoom = function(idx) {
-      const state = getZoomState(idx);
-      state.scale = 1; state.translateX = 0; state.translateY = 0;
-      applyImageTransform(idx);
-    };
-
-    window.handleImageWheel = function(e, idx) {
-      e.preventDefault();
-      const state = getZoomState(idx);
-      const delta = e.deltaY < 0 ? 0.25 : -0.25;
-      state.scale = Math.min(Math.max(1, state.scale + delta), 5);
-      if (state.scale === 1) { state.translateX = 0; state.translateY = 0; }
-      applyImageTransform(idx);
-    };
-
-    function applyImageTransform(idx) {
-      const img = document.getElementById(`previewImg_${idx}`);
-      const badge = document.getElementById(`zoomLevel_${idx}`);
-      const state = getZoomState(idx);
-      if (img) img.style.transform = `scale(${state.scale}) translate(${state.translateX}px, ${state.translateY}px)`;
-      if (badge) badge.textContent = `${Math.round(state.scale * 100)}%`;
-    }
-
-    let isDragging = false;
-    let startX = 0, startY = 0;
-    let activeDragIdx = null;
-
-    window.handleImageMouseDown = function(e, idx) {
-      const state = getZoomState(idx);
-      if (state.scale > 1) {
-        isDragging = true;
-        activeDragIdx = idx;
-        startX = e.clientX - state.translateX;
-        startY = e.clientY - state.translateY;
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isDragging || activeDragIdx === null) return;
-      const state = getZoomState(activeDragIdx);
-      state.translateX = e.clientX - startX;
-      state.translateY = e.clientY - startY;
-      applyImageTransform(activeDragIdx);
-    });
-
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-      activeDragIdx = null;
-    });
-
-    generatePdfBtn.addEventListener('click', () => {
-      const claimNumber = document.getElementById('claimNumber').value.trim();
-      const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
-      const insuranceCompany = document.getElementById('insuranceCompany').value;
-      const vehicleMake = document.getElementById('vehicleMake').value.trim();
-      const vehicleModel = document.getElementById('vehicleModel').value.trim();
-      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
-      const quoteType = document.getElementById('quoteType').value;
-      const mfgDate = document.getElementById('mfgDate').value.trim();
-      const regYear = document.getElementById('regYear').value.trim();
-      const fuelType = document.getElementById('fuelType').value;
-      const ownership = document.getElementById('ownership').value;
-      const location = document.getElementById('location').value.trim();
-
-      const missingFields = [];
-      if (!claimNumber) missingFields.push('Claim Number');
-      if (!vehicleNumber) missingFields.push('Vehicle Number');
-      if (!insuranceCompany) missingFields.push('Insurance Company');
-      if (!vehicleMake) missingFields.push('Make');
-      if (!vehicleModel) missingFields.push('Model');
-      if (!vehicleVariant) missingFields.push('Variant');
-      if (!quoteType) missingFields.push('Quote Type');
-      if (!mfgDate) missingFields.push('Manufacturing Year');
-      if (!regYear) missingFields.push('Registration Year');
-      if (!fuelType) missingFields.push('Fuel Type');
-      if (!ownership) missingFields.push('Ownership');
-      if (!location) missingFields.push('Location');
-
-      if (missingFields.length > 0) {
-        showAlert(`Kripya sabhi fields fill karein: ${missingFields.join(', ')}`, 'error');
-        return;
-      }
-
-      if (uploadedImages.length === 0) {
-        showAlert('Kripya kam se kam ek vehicle photo jarur upload karein!', 'error');
-        fileInput.click();
-        return;
-      }
-
-      const mfgNum = parseInt(mfgDate);
-      const regNum = parseInt(regYear);
-      if (!isNaN(mfgNum) && !isNaN(regNum) && regNum < mfgNum) {
-        const mfgEl = document.getElementById('mfgDate');
-        const regEl = document.getElementById('regYear');
-        regEl.classList.add('invalid-glow');
-        mfgEl.classList.add('invalid-glow');
-
-        showAlert('Error: Registration Year Manufacturing Year se kam nahi ho sakti! Kripya valid dates select karein.', 'error');
-        return;
-      }
-
-      proceedWithPreview();
-    });
-
-    function proceedWithPreview() {
-      const claimNumber = document.getElementById('claimNumber').value.trim();
-      const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
-      const insuranceCompany = document.getElementById('insuranceCompany').value;
-      const vehicleMake = document.getElementById('vehicleMake').value.trim();
-      const vehicleModel = document.getElementById('vehicleModel').value.trim();
-      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
-      const quoteType = document.getElementById('quoteType').value;
-      const mfgDate = document.getElementById('mfgDate').value.trim();
-      const regYear = document.getElementById('regYear').value.trim();
-      const fuelType = document.getElementById('fuelType').value;
-      const ownership = document.getElementById('ownership').value;
-      const location = document.getElementById('location').value.trim();
-
-      const fields = [
-        { label: 'Claim Number', value: claimNumber },
-        { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
-        { label: 'Insurance Company', value: insuranceCompany },
-        { label: 'Make', value: vehicleMake },
-        { label: 'Model', value: vehicleModel },
-        { label: 'Variant', value: vehicleVariant },
-        { label: 'Manufacturing Year', value: mfgDate },
-        { label: 'Registration Year', value: regYear },
-        { label: 'Quote Type', value: quoteType },
-        { label: 'Fuel Type', value: fuelType },
-        { label: 'Ownership', value: ownership },
-        { label: 'Location', value: location }
-      ];
-
-      previewDetailsList.innerHTML = fields.map(f => `
-        <div class="flex items-start justify-between p-2 rounded-lg bg-indigo-50/50 border border-indigo-100 shadow-[0_0_12px_rgba(99,102,241,0.18)] text-xs sm:text-sm transition hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]">
-          <span class="font-extrabold text-indigo-900">${f.label}:</span>
-          <span class="text-indigo-950 font-extrabold select-all text-right max-w-[60%] break-words">${f.value}</span>
+    function addGroup(name = '', numbers = '') {
+      groupCounter++;
+      const div = document.createElement('div');
+      div.className = 'group p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3';
+      div.dataset.groupId = String(groupCounter);
+      div.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <h3 class="font-bold text-sm text-slate-800">Recipient ${groupCounter}</h3>
+          <button type="button" class="remove inline-flex items-center gap-1 text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded-lg font-bold transition cursor-pointer">
+            <i class="ph ph-trash"></i> Remove
+          </button>
         </div>
-      `).join('');
-
-      previewPhotoCount.textContent = uploadedImages.length;
-      imageZooms = {};
-      previewPhotosScrollContainer.innerHTML = uploadedImages.map((img, idx) => `
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 shadow-md">
-          <div class="flex items-center justify-between mb-2 px-1 flex-wrap gap-2">
-            <span class="text-xs sm:text-sm font-bold text-slate-800">Photo #${idx + 1}</span>
-            <div class="flex items-center gap-1.5">
-              <span id="zoomLevel_${idx}" class="text-[11px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">100%</span>
-              <button type="button" onclick="zoomImage(${idx}, 0.25)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold" title="Zoom In">+</button>
-              <button type="button" onclick="zoomImage(${idx}, -0.25)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold" title="Zoom Out">-</button>
-              <button type="button" onclick="resetImageZoom(${idx})" class="px-1.5 h-6 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] font-bold" title="Reset Zoom">Reset</button>
-              <span class="text-xs text-slate-500 truncate max-w-[120px] ml-1">${img.name}</span>
-            </div>
-          </div>
-          <div id="imgContainer_${idx}" class="relative rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center min-h-[350px] sm:min-h-[500px] cursor-grab active:cursor-grabbing select-none" onwheel="handleImageWheel(event, ${idx})" onmousedown="handleImageMouseDown(event, ${idx})" ondblclick="resetImageZoom(${idx})">
-            <img id="previewImg_${idx}" src="${img.dataUrl}" alt="Photo ${idx + 1}" class="transition-transform duration-75 object-contain max-h-[70vh] pointer-events-none" style="transform: scale(1) translate(0px, 0px);">
-            <div class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded pointer-events-none opacity-80">
-              💡 Scroll to Zoom | Drag to Pan | Double Click to Reset
-            </div>
-          </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Recipient / ZIP name</label>
+          <input class="recipient w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white" type="text" placeholder="e.g. Mayur" value="">
         </div>
-      `).join('');
-
-      previewModal.classList.remove('hidden');
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Vehicle numbers</label>
+          <textarea class="numbers w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white min-h-[100px] resize-vertical" placeholder="KL06F5207&#10;KL07CZ9988&#10;MH15KK6122"></textarea>
+          <p class="text-[11px] text-slate-500 mt-1">Only PDFs matching these vehicle numbers will be included in this recipient's ZIP.</p>
+        </div>
+      `;
+      div.querySelector('.recipient').value = name;
+      div.querySelector('.numbers').value = numbers;
+      div.querySelector('.remove').addEventListener('click', () => { div.remove(); refreshGroupTitles(); });
+      groupsEl.appendChild(div);
+      refreshGroupTitles();
     }
 
-    document.getElementById('dateConflictYesBtn').addEventListener('click', () => {
-      document.getElementById('dateConflictModal').classList.add('hidden');
-      document.getElementById('mfgDate').classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
-      document.getElementById('regYear').classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
-      proceedWithPreview();
+    function refreshGroupTitles() {
+      [...groupsEl.querySelectorAll('.group')].forEach((g, i) => g.querySelector('h3').textContent = 'Recipient ' + (i + 1));
+    }
+
+    folderInput.addEventListener('change', () => {
+      pdfFiles = [...folderInput.files].filter(f => f.name.toLowerCase().endsWith('.pdf'));
+      folderStatus.textContent = `Selected ${folderInput.files.length} file(s); found ${pdfFiles.length} PDF(s).`;
+      folderStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium border ' + (pdfFiles.length ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200');
+      mainStatus.textContent = pdfFiles.length ? 'Folder is ready. Add vehicle numbers and create ZIPs.' : 'No PDF files found. Please select the correct folder.';
+      mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium border ' + (pdfFiles.length ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-rose-50 text-rose-700 border-rose-200');
+      resultsEl.innerHTML = '';
+      madeZips = [];
+      downloadAllBtn.disabled = true;
     });
 
-    document.getElementById('dateConflictNoBtn').addEventListener('click', () => {
-      document.getElementById('dateConflictModal').classList.add('hidden');
-      const mfgEl = document.getElementById('mfgDate');
-      const regEl = document.getElementById('regYear');
-      regEl.value = mfgEl.value;
-      updateFieldGlow(regEl);
-      mfgEl.classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
-      regEl.classList.remove('invalid-glow', 'border-rose-500', 'ring-2', 'ring-rose-500', 'bg-rose-50');
-      showAlert('Registration Year ko Manufacturing Year ke barabar set kar diya gaya hai.', 'success');
-    });
+    function getNumbers(text) {
+      return [...new Set((text || '').split(/[\n,;]+/).map(x => x.trim()).filter(Boolean).map(normalize).filter(Boolean))];
+    }
 
-    confirmDownloadBtn.addEventListener('click', async () => {
-      backupCurrentForm();
-      previewModal.classList.add('hidden');
+    function findMatches(number) {
+      return pdfFiles.filter(f => normalize(f.name).includes(number));
+    }
 
-      const claimNumber = document.getElementById('claimNumber').value.trim();
-      const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
-      const insuranceCompany = document.getElementById('insuranceCompany').value;
-      const vehicleMake = document.getElementById('vehicleMake').value.trim();
-      const vehicleModel = document.getElementById('vehicleModel').value.trim();
-      const vehicleVariant = document.getElementById('vehicleVariant').value.trim();
-      const fullMakeModel = `${vehicleMake} ${vehicleModel} ${vehicleVariant}`.trim();
-      const quoteType = document.getElementById('quoteType').value;
-      const mfgDate = document.getElementById('mfgDate').value.trim();
-      const regYear = document.getElementById('regYear').value.trim();
-      const fuelType = document.getElementById('fuelType').value;
-      const ownership = document.getElementById('ownership').value;
-      const location = document.getElementById('location').value.trim();
+    function saveBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
 
-      suggestionFields.forEach(fieldId => {
-        const el = document.getElementById(fieldId);
-        if (el && el.value) {
-          saveSuggestion(fieldId, el.value);
+    document.getElementById('addGroup').addEventListener('click', () => addGroup());
+
+    document.getElementById('makeZips').addEventListener('click', async () => {
+      resultsEl.innerHTML = '';
+      madeZips = [];
+      downloadAllBtn.disabled = true;
+      if (!window.JSZip) {
+        mainStatus.textContent = 'ZIP library could not load. Check your internet connection, reload this page, and try again.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      if (!pdfFiles.length) {
+        mainStatus.textContent = 'First select the folder that contains your PDFs.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      const groups = [...groupsEl.querySelectorAll('.group')];
+      if (!groups.length) {
+        mainStatus.textContent = 'Please add at least one recipient.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        return;
+      }
+      const plans = [];
+      const globallyUsed = new Map();
+      for (let i = 0; i < groups.length; i++) {
+        const el = groups[i], name = el.querySelector('.recipient').value.trim() || `Recipient_${i + 1}`;
+        const numbers = getNumbers(el.querySelector('.numbers').value);
+        if (!numbers.length) {
+          plans.push({ name, numbers: [], matches: [], missing: [], duplicates: [], error: 'No vehicle numbers entered.' });
+          continue;
         }
-      });
-
-      loadingModal.classList.remove('hidden');
-      progressBar.style.width = '20%';
-      loadingStatusText.textContent = 'Report structure taiyar kiya ja raha hai...';
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-
-        const pageWidth = 210;
-        const pageHeight = 297;
-        const margin = 10;
-        const contentWidth = pageWidth - (margin * 2);
-
-        // PAGE 1: DETAILS
-        doc.setFillColor(30, 41, 59);
-        doc.rect(margin, 12, contentWidth, 26, 'F');
-
-        doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(15);
-        doc.text('VEHICLE INSPECTION & CLAIM REPORT', margin + 8, 22);
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        const currentDate = new Date().toLocaleString('en-IN', {
-          dateStyle: 'medium',
-          timeStyle: 'short'
-        });
-        doc.text(`Generated on: ${currentDate}`, margin + 8, 30);
-
-        const fields = [
-          { label: 'Vehicle Number', value: vehicleNumber.toUpperCase() },
-          { label: 'Insurance Company', value: insuranceCompany },
-          { label: 'Make', value: vehicleMake },
-          { label: 'Model', value: vehicleModel },
-          { label: 'Variant', value: vehicleVariant },
-          { label: 'Manufacturing Date', value: mfgDate },
-          { label: 'Registration Year', value: regYear },
-          { label: 'Quote Type', value: quoteType },
-          { label: 'Fuel Type', value: fuelType },
-          { label: 'Ownership', value: ownership },
-          { label: 'Location', value: location }
-        ];
-
-        let startY = 41;
-        const minRowHeight = 14;
-        const labelWidth = 60;
-        const valueWidth = contentWidth - labelWidth;
-        const paddingX = 4;
-        const paddingY = 8.5;
-
-        doc.setDrawColor(203, 213, 225);
-        doc.setLineWidth(0.4);
-
-        let currentY = startY;
-
-        fields.forEach((field, index) => {
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(10);
-          const maxTextW = valueWidth - (paddingX * 2);
-          const wrappedLines = doc.splitTextToSize(String(field.value), maxTextW);
-          const lineCount = wrappedLines.length;
-          const dynamicHeight = Math.max(minRowHeight, (lineCount * 5.5) + 6);
-
-          if (index % 2 === 0) {
-            doc.setFillColor(248, 250, 252);
-          } else {
-            doc.setFillColor(255, 255, 255);
-          }
-          doc.rect(margin, currentY, contentWidth, dynamicHeight, 'FD');
-
-          doc.setTextColor(15, 23, 42);
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10.5);
-          doc.text(field.label, margin + paddingX, currentY + paddingY);
-
-          doc.line(margin + labelWidth, currentY, margin + labelWidth, currentY + dynamicHeight);
-
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(10);
-          doc.setTextColor(51, 65, 85);
-          doc.text(wrappedLines, margin + labelWidth + paddingX, currentY + paddingY);
-
-          currentY += dynamicHeight;
-        });
-
-        const bottomBoxY = currentY + 6;
-        doc.setFillColor(241, 245, 249);
-        doc.roundedRect(margin, bottomBoxY, contentWidth, 20, 2, 2, 'F');
-        doc.setDrawColor(226, 232, 240);
-        doc.roundedRect(margin, bottomBoxY, contentWidth, 20, 2, 2, 'D');
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
-        doc.setTextColor(30, 41, 59);
-        doc.text('Attached Documentation / Photographs:', margin + 4, bottomBoxY + 7);
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.setTextColor(100, 116, 139);
-        const imgText = `Total ${uploadedImages.length} vehicle photograph(s) are attached in the following pages of this document.`;
-        doc.text(imgText, margin + 4, bottomBoxY + 14);
-
-        doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184);
-        doc.text(`Page 1 of ${uploadedImages.length + 1}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
-
-        // SUBSEQUENT PAGES: PHOTOS
-        progressBar.style.width = '40%';
-        loadingStatusText.textContent = `0 of ${uploadedImages.length} images processed...`;
-
-        for (let i = 0; i < uploadedImages.length; i++) {
-          const imgItem = uploadedImages[i];
-          doc.addPage();
-
-          doc.setFillColor(248, 250, 252);
-          doc.rect(0, 0, pageWidth, 16, 'F');
-          doc.setDrawColor(226, 232, 240);
-          doc.line(0, 16, pageWidth, 16);
-
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10);
-          doc.setTextColor(30, 41, 59);
-          doc.text(`Vehicle Inspection Photo #${i + 1}`, margin, 11);
-
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(9);
-          doc.setTextColor(100, 116, 139);
-          doc.text(`${vehicleNumber.toUpperCase()} | ${fullMakeModel}`, pageWidth - margin, 11, { align: 'right' });
-
-          const imgElement = await loadImageElement(imgItem.dataUrl);
-          const origW = imgElement.naturalWidth || imgElement.width || 800;
-          const origH = imgElement.naturalHeight || imgElement.height || 600;
-
-          const canvas = document.createElement('canvas');
-          canvas.width = origW;
-          canvas.height = origH;
-          const ctx = canvas.getContext('2d', { alpha: false });
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, origW, origH);
-          ctx.drawImage(imgElement, 0, 0, origW, origH);
-          const cleanJpegDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-
-          const maxImgW = contentWidth;
-          const maxImgH = 265;
-          const ratio = Math.min(maxImgW / origW, maxImgH / origH);
-
-          const finalW = origW * ratio;
-          const finalH = origH * ratio;
-
-          const posX = margin + (contentWidth - finalW) / 2;
-          const posY = 18 + Math.max(0, (maxImgH - finalH) / 2);
-
-          doc.setFillColor(241, 245, 249);
-          doc.roundedRect(posX - 1, posY - 1, finalW + 2, finalH + 2, 1, 1, 'F');
-
-          doc.addImage(cleanJpegDataUrl, 'JPEG', posX, posY, finalW, finalH);
-
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8.5);
-          doc.setTextColor(100, 116, 139);
-          const caption = `Photograph #${i + 1} - ${imgItem.name || 'Vehicle Photo'}`;
-          doc.text(caption, pageWidth / 2, posY + finalH + 5, { align: 'center' });
-
-          doc.setFontSize(8);
-          doc.setTextColor(148, 163, 184);
-          doc.text(`Page ${i + 2} of ${uploadedImages.length + 1}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
-
-          const progressPercent = 40 + Math.floor(((i + 1) / uploadedImages.length) * 55);
-          progressBar.style.width = `${progressPercent}%`;
-          loadingStatusText.textContent = `${i + 1} of ${uploadedImages.length} images processed...`;
+        const matchMap = new Map(), missing = [], duplicates = [];
+        for (const n of numbers) {
+          const found = findMatches(n);
+          if (!found.length) missing.push(n);
+          if (found.length > 1) duplicates.push({ number: n, files: found.map(f => f.name) });
+          found.forEach(f => matchMap.set(f.name, f));
+          if (found.length) globallyUsed.set(name + '|' + n, true);
         }
+        plans.push({ name, numbers, matches: [...matchMap.values()], missing, duplicates });
+      }
+      mainStatus.textContent = 'Preparing ZIP files… please wait.';
+      mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200';
+      const allZip = new JSZip();
+      let successful = 0;
+      for (let i = 0; i < plans.length; i++) {
+        const p = plans[i], card = document.createElement('div');
+        card.className = 'result p-4 bg-white border border-slate-200 rounded-xl space-y-2 shadow-sm';
+        const title = document.createElement('strong');
+        title.className = 'font-bold text-slate-800 text-sm';
+        title.textContent = p.name;
+        card.appendChild(title);
 
-        const cleanVeh = sanitizeFilename(vehicleNumber);
-        const cleanMake = sanitizeFilename(fullMakeModel);
-        const fileName = `${cleanVeh}_${cleanMake}.pdf`;
-
-        progressBar.style.width = '100%';
-        loadingStatusText.textContent = 'PDF download ho rahi hai...';
-
-        let savedDirectly = false;
-        if (savedDirectoryHandle) {
+        if (!p.matches.length) {
+          const msg = document.createElement('div');
+          msg.className = 'text-xs text-rose-600 font-medium';
+          msg.textContent = p.error || 'No matching PDFs found; no ZIP created.';
+          card.appendChild(msg);
+        } else {
+          const zip = new JSZip();
+          for (const f of p.matches) { zip.file(f.name, f); }
           try {
-            const opts = { mode: 'readwrite' };
-            if ((await savedDirectoryHandle.queryPermission(opts)) !== 'granted') {
-              if ((await savedDirectoryHandle.requestPermission(opts)) !== 'granted') {
-                throw new Error('Permission denied');
-              }
-            }
-            const fileHandle = await savedDirectoryHandle.getFileHandle(fileName, { create: true });
-            const writable = await fileHandle.createWritable();
-            const pdfBlob = doc.output('blob');
-            await writable.write(pdfBlob);
-            await writable.close();
-            savedDirectly = true;
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const filename = safeName(p.name) + '_PDFs.zip';
+            madeZips.push({ name: filename, blob });
+            allZip.file(filename, blob);
+            successful++;
+            const msg = document.createElement('div');
+            msg.className = 'text-xs text-emerald-700 font-medium';
+            msg.textContent = `Found ${p.matches.length} PDF(s).`;
+            card.appendChild(msg);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow cursor-pointer mt-2';
+            btn.innerHTML = `<i class="ph-bold ph-file-arrow-down"></i> Download ${filename}`;
+            btn.addEventListener('click', () => saveBlob(blob, filename));
+            card.appendChild(btn);
+            const list = document.createElement('ul');
+            list.className = 'list-disc pl-5 text-xs text-slate-600 space-y-1 mt-2';
+            p.matches.forEach(f => { const li = document.createElement('li'); li.textContent = f.name; list.appendChild(li); });
+            card.appendChild(list);
           } catch (e) {
-            console.warn('Direct folder save failed, fallback to browser download:', e);
+            const msg = document.createElement('div');
+            msg.className = 'text-xs text-rose-600 font-medium';
+            msg.textContent = 'ZIP creation failed: ' + e.message;
+            card.appendChild(msg);
           }
         }
-
-        if (!savedDirectly) {
-          doc.save(fileName);
+        if (p.missing.length) {
+          const m = document.createElement('div');
+          m.className = 'text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-2';
+          m.textContent = 'Not found: ' + p.missing.join(', ');
+          card.appendChild(m);
         }
-
-        const cloudRecord = {
-          claim_number: claimNumber,
-          vehicle_number: vehicleNumber.toUpperCase(),
-          insurance_company: insuranceCompany,
-          make: vehicleMake,
-          model: vehicleModel,
-          variant: vehicleVariant,
-          mfg_year: mfgDate,
-          reg_year: regYear,
-          quote_type: quoteType,
-          fuel_type: fuelType,
-          ownership: ownership,
-          location: location
-        };
-        saveRecordToDatabase(cloudRecord);
-
-        setTimeout(() => {
-          loadingModal.classList.add('hidden');
-          showAlert(`PDF "${fileName}" download ho gayi aur Cloud database me save ho gaya!`, 'success');
-          showSuccessPopup(fileName);
-        }, 600);
-
-      } catch (err) {
-        console.error('PDF Generation Error:', err);
-        loadingModal.classList.add('hidden');
-        showAlert('PDF generate karte samay ek error aayi. Kripya dobara try karein.', 'error');
+        if (p.duplicates.length) {
+          const d = document.createElement('div');
+          d.className = 'text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-2';
+          d.textContent = 'Multiple filename matches (all included):';
+          card.appendChild(d);
+          const ul = document.createElement('ul');
+          ul.className = 'list-disc pl-5 text-xs text-slate-600 space-y-1 mt-1';
+          p.duplicates.forEach(item => { const li = document.createElement('li'); li.textContent = item.number + ': ' + item.files.join(' | '); ul.appendChild(li); });
+          card.appendChild(ul);
+        }
+        resultsEl.appendChild(card);
+      }
+      if (successful) {
+        const allBlob = await allZip.generateAsync({ type: 'blob' });
+        madeZips.all = { name: 'All_Recipients_ZIPs.zip', blob: allBlob };
+        downloadAllBtn.disabled = false;
+        mainStatus.textContent = `Done. Created ${successful} recipient ZIP(s). Review each result and download the required ZIP(s).`;
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+      } else {
+        mainStatus.textContent = 'No ZIPs were created. Check the vehicle numbers and filenames.';
+        mainStatus.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200';
       }
     });
 
-    const successModal = document.getElementById('successModal');
-    const successModalText = document.getElementById('successModalText');
-    const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
-
-    let lastSubmittedData = null;
-
-    function showSuccessPopup(fileName) {
-      if (successModalText) {
-        successModalText.textContent = fileName;
-      }
-      if (successModal) {
-        successModal.classList.remove('hidden');
-      }
-    }
-
-    function backupCurrentForm() {
-      const formInputs = document.querySelectorAll('#reportForm input, #reportForm select');
-      const formData = {};
-      formInputs.forEach(input => {
-        formData[input.id] = input.value;
-      });
-      lastSubmittedData = {
-        formData: formData,
-        images: [...uploadedImages]
-      };
-    }
-
-    if (closeSuccessModalBtn) {
-      closeSuccessModalBtn.addEventListener('click', () => {
-        successModal.classList.add('hidden');
-        document.getElementById('reportForm').reset();
-        document.querySelectorAll('#reportForm input, #reportForm select').forEach(el => {
-          el.classList.remove('filled-glow');
-        });
-        uploadedImages = [];
-        renderThumbnails();
-        statusAlert.classList.add('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        showAlert('Form naye entry ke liye khali kar diya gaya hai. Purana data wapis lane ke liye "Restore Data" button click karein.', 'success');
-      });
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const successModal = document.getElementById('successModal');
-        if (successModal && !successModal.classList.contains('hidden')) {
-          e.preventDefault();
-          if (closeSuccessModalBtn) {
-            closeSuccessModalBtn.click();
-          }
-        }
-      }
+    downloadAllBtn.addEventListener('click', () => {
+      if (madeZips.all) saveBlob(madeZips.all.blob, madeZips.all.name);
     });
 
-    const restoreBtn = document.getElementById('restoreBtn');
-    if (restoreBtn) {
-      restoreBtn.addEventListener('click', () => {
-        if (!lastSubmittedData || !lastSubmittedData.formData) {
-          showAlert('Koi bhi previous filled data available nahi hai!', 'error');
-          return;
-        }
-        Object.keys(lastSubmittedData.formData).forEach(id => {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = lastSubmittedData.formData[id];
-            updateFieldGlow(el);
-          }
-        });
-        uploadedImages = [...lastSubmittedData.images];
-        renderThumbnails();
-        showAlert('Previous filled data successfully wapis aa gaya hai!', 'success');
-      });
-    }
-
-    // --- AUDIO HANDLING & SCHEDULE (chhhuti-ho-gai.mp3) ---
-   // --- AUTOMATIC OFFICE CLOSING AUDIO (Monday to Saturday at 6:29 PM IST) ---
-    const closingAudio = new Audio('chhhuti-ho-gai.mp3');
-    closingAudio.id = 'closingAudio';
-    closingAudio.preload = 'auto';
-    closingAudio.volume = 1.0;
-
-    closingAudio.addEventListener('error', (e) => {
-      console.error('Audio file load error. Make sure chhhuti-ho-gai.mp3 is in the root directory.', e);
-    });
-
-    let audioUnlocked = false;
-    function unlockClosingAudio() {
-      if (audioUnlocked) return;
-      closingAudio.play().then(() => {
-        closingAudio.pause();
-        closingAudio.currentTime = 0;
-        audioUnlocked = true;
-        console.log('Audio autoplay policy successfully unlocked for this session.');
-      }).catch(err => {
-        console.warn('Audio waiting for direct user gesture:', err);
-      });
-    }
-
-    // Har direct user input par unlock trigger hoga
-    ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
-      window.addEventListener(evt, unlockClosingAudio, { once: true });
-    });
-
-    function playAudioSequence(timesLeft) {
-      if (timesLeft <= 0) return;
-      closingAudio.volume = 1.0;
-      closingAudio.currentTime = 0;
-      closingAudio.play().then(() => {
-        if (timesLeft > 1) {
-          closingAudio.onended = () => {
-            closingAudio.onended = null;
-            const gap = Math.floor(Math.random() * 1000) + 1000;
-            setTimeout(() => {
-              playAudioSequence(timesLeft - 1);
-            }, gap);
-          };
-        }
-      }).catch(err => {
-        console.warn('Audio play was blocked by browser:', err);
-        showAlert('🔊 Chhuti ka time ho gaya! (Browser ne audio block kiya, screen par click karein)', 'error');
-      });
-    }
-
-    // Schedule check: Monday to Saturday at 6:29 PM (18:29 IST)
-    function checkOfficeClosingSchedule() {
-      try {
-        const now = new Date();
-        const options = { 
-          timeZone: 'Asia/Kolkata', 
-          hour12: false, 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          year: 'numeric', 
-          month: '2-digit', 
-          day: '2-digit',
-          weekday: 'short'
-        };
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const parts = formatter.formatToParts(now);
-
-        let year, month, day, hour, minute, weekday;
-        parts.forEach(p => {
-          if (p.type === 'year') year = p.value;
-          if (p.type === 'month') month = p.value;
-          if (p.type === 'day') day = p.value;
-          if (p.type === 'hour') hour = parseInt(p.value, 10);
-          if (p.type === 'minute') minute = parseInt(p.value, 10);
-          if (p.type === 'weekday') weekday = p.value; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
-        });
-
-        // Sunday ko run nahi hoga (Sirf Monday se Saturday)
-        const isWorkingDay = weekday !== 'Sun';
-
-        // Sham ke 6:29 PM (18:29 IST)
-        if (isWorkingDay && hour === 18 && minute === 29) {
-          const dateKey = `gaadi_audio_played_${year}-${month}-${day}_18_29`;
-          if (localStorage.getItem(dateKey) !== 'true') {
-            localStorage.setItem(dateKey, 'true');
-            playAudioSequence(2);
-            showAlert('🔊 Chhuti ho gayi! Office closing audio reminder triggered.', 'success');
-          }
-        }
-      } catch (err) {
-        console.error('Schedule check error:', err);
-      }
-    }
-
-    // Har 5 second me check hoga
-    setInterval(checkOfficeClosingSchedule, 5000);
+    addGroup('Recipient 1', '');
   </script>
 </body>
 </html>
